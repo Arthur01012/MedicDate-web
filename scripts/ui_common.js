@@ -1,7 +1,6 @@
 /**
  * Utilidades compartidas de interfaz para los paneles privados de MedicDate Web.
- * Idéntico al flujo y diseño de MedicDate web _ Prototipo funcional con 3 perfiles.html
- * con las credenciales reales de Credenciales_Prueba_MedicDate.md.
+ * Conectado directamente a https://medicdate.innego.net/web/apis/medicdate
  */
 (function (global) {
   'use strict';
@@ -43,7 +42,7 @@
   }
 
   function badgeEstado(estado, etiqueta) {
-    const clave = String(etiqueta || estado || '').toLowerCase();
+    const clave = String(estado || etiqueta || '').toLowerCase();
     let cls = 'b-azul';
     let texto = 'Programada';
 
@@ -152,12 +151,11 @@
     barra.id = 'demo';
     barra.innerHTML = `
       <div class="cont">
-        <b>Cuentas BD (Prueba123!)</b>
-        <span>Selecciona un perfil de la base de datos:</span>
-        <button type="button" data-demo-cuenta="asistente">Asistente: Luna Aurora Reyes</button>
-        <button type="button" data-demo-cuenta="medico1">Médico 1: Dr. José Rodríguez</button>
-        <button type="button" data-demo-cuenta="medico2">Médica 2: Dra. Sofía Flores</button>
-        <button type="button" id="btnRestablecerDatosDemo">Restablecer datos</button>
+        <b>API en vivo: medicdate.innego.net</b>
+        <span>Cambiar cuenta activa de la BD:</span>
+        <button type="button" data-demo-cuenta="asistente">Asistente: Luna Aurora Reyes (ID 4)</button>
+        <button type="button" data-demo-cuenta="medico1">Médico 1: Dr. José Rodríguez (ID 2)</button>
+        <button type="button" data-demo-cuenta="medico2">Médica 2: Dra. Sofía Flores (ID 3)</button>
       </div>
     `;
     document.body.insertBefore(barra, document.body.firstChild);
@@ -179,15 +177,6 @@
         }
       });
     });
-
-    const btnReset = document.getElementById('btnRestablecerDatosDemo');
-    if (btnReset) {
-      btnReset.addEventListener('click', () => {
-        global.MedicDateApi.restablecerBDLocal();
-        toast('Datos restablecidos.');
-        setTimeout(() => global.location.reload(), 350);
-      });
-    }
   }
 
   function abrirModalMiCuenta(sesion) {
@@ -207,6 +196,7 @@
       <div class="mc">
         <h3>Mi cuenta</h3>
         <div class="kv" style="margin-bottom:16px">
+          <b>ID Usuario</b><span>${esc(sesion.id_usuario)}</span>
           <b>Nombre</b><span>${esc(sesion.nombre)}</span>
           <b>Correo</b><span>${esc(sesion.correo)}</span>
           <b>Perfil</b><span>${esc(rolTexto)}</span>

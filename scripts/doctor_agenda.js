@@ -12,6 +12,7 @@
   let estadoFiltros = Filtros.limpiarFiltros('doctor_agenda');
   let modalCitaCtrl = null;
   let citaActivaId = null;
+  let esCargaInicial = true;
 
   function actualizarBotonesLapso() {
     document.querySelectorAll('[data-lapso]').forEach((btn) => {
@@ -48,7 +49,18 @@
 
   async function cargarAgenda() {
     actualizarBotonesLapso();
-    const data = await Service.obtenerAgendaMedico(estadoFiltros);
+    let data = await Service.obtenerAgendaMedico(estadoFiltros);
+
+    // Si en la primera carga el día de hoy no tiene citas en la BD, mostrar "Próximos 7 días"
+    if (esCargaInicial) {
+      esCargaInicial = false;
+      if (estadoFiltros.lapso === 'hoy' && (!data.citas || data.citas.length === 0)) {
+        estadoFiltros.lapso = 'semana';
+        actualizarBotonesLapso();
+        data = await Service.obtenerAgendaMedico(estadoFiltros);
+      }
+    }
+
     if (data.medico && data.medico.nombre) {
       document.getElementById('topbarUsuario').textContent = `${data.medico.nombre} · Médico`;
       document.getElementById('topbarAvatar').textContent = UI.iniciales(data.medico.nombre);
@@ -87,8 +99,9 @@
       btnGuardar.classList.toggle('oculto', !c.puede_editar_notas);
       btnAtender.classList.toggle('oculto', !c.puede_marcar_atendida);
 
-      const estEtiqueta = String(c.estado_etiqueta || c.estado || '');
-      avisoFecha.classList.toggle('oculto', !(estEtiqueta === 'Programada' && !c.puede_marcar_atendida));
+      const estClave = String(c.estado || c.estado_etiqueta || '').toLowerCase();
+      const esProgramada = ['pendiente', 'confirmada', 'en_progreso', 'programada'].includes(estClave);
+      avisoFecha.classList.toggle('oculto', !(esProgramada && !c.puede_marcar_atendida));
 
       modalCitaCtrl.backdrop.classList.add('on');
     } catch (error) {
