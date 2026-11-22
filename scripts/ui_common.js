@@ -145,41 +145,7 @@
       </div>
     </div>`;
 
-  function inyectarBarraDemo(sesionActual) {
-    if (document.getElementById('demo')) return;
-    const barra = document.createElement('div');
-    barra.id = 'demo';
-    barra.innerHTML = `
-      <div class="cont">
-        <b>API en vivo: medicdate.innego.net</b>
-        <span>Cambiar cuenta activa de la BD:</span>
-        <button type="button" data-demo-cuenta="asistente">Asistente: Luna Aurora Reyes (ID 4)</button>
-        <button type="button" data-demo-cuenta="medico1">Médico 1: Dr. José Rodríguez (ID 2)</button>
-        <button type="button" data-demo-cuenta="medico2">Médica 2: Dra. Sofía Flores (ID 3)</button>
-      </div>
-    `;
-    document.body.insertBefore(barra, document.body.firstChild);
-
-    barra.querySelectorAll('[data-demo-cuenta]').forEach((btn) => {
-      const clave = btn.dataset.demoCuenta;
-      const cuenta = global.MedicDateApi.CUENTAS_BD[clave];
-      if (sesionActual && cuenta && Number(sesionActual.id_usuario) === Number(cuenta.id_usuario)) {
-        btn.classList.add('on');
-      }
-      btn.addEventListener('click', () => {
-        const nueva = global.MedicDateApi.activarCuentaDemo(clave);
-        if (!nueva) return;
-        const enCarpetaAsistente = global.location.pathname.includes('/asistente/');
-        if (nueva.rol === 'asistente') {
-          global.location.href = enCarpetaAsistente ? './agenda_general.html' : '../asistente/agenda_general.html';
-        } else {
-          global.location.href = enCarpetaAsistente ? '../doctor/resumen.html' : './resumen.html';
-        }
-      });
-    });
-  }
-
-  function abrirModalMiCuenta(sesion) {
+  function abrirModalMiCuenta(sesion, rol) {
     let modal = document.getElementById('modalMiCuenta');
     if (!modal) {
       modal = document.createElement('div');
@@ -191,16 +157,20 @@
       });
     }
 
-    const rolTexto = sesion.rol === 'medico' ? 'Médico' : 'Asistente';
+    const perfilApi = global.MedicDateApi.obtenerPerfilCargado() || {};
+    const nombre = perfilApi.nombre || sesion?.nombre || 'Usuario';
+    const idUsuario = perfilApi.id_usuario || sesion?.id_usuario || '—';
+    const rolTexto = rol === 'medico' ? 'Médico' : 'Asistente';
+
     modal.innerHTML = `
       <div class="mc">
         <h3>Mi cuenta</h3>
         <div class="kv" style="margin-bottom:16px">
-          <b>ID Usuario</b><span>${esc(sesion.id_usuario)}</span>
-          <b>Nombre</b><span>${esc(sesion.nombre)}</span>
-          <b>Correo</b><span>${esc(sesion.correo)}</span>
+          <b>ID Usuario</b><span>${esc(idUsuario)}</span>
+          <b>Nombre</b><span>${esc(nombre)}</span>
           <b>Perfil</b><span>${esc(rolTexto)}</span>
-          <b>Pregunta secreta</b><span>${esc(sesion.pregunta || '¿Cuál es el nombre de tu primera mascota?')}</span>
+          ${perfilApi.especialidades ? `<b>Especialidad</b><span>${esc(perfilApi.especialidades)}</span>` : ''}
+          ${perfilApi.cedula_profesional ? `<b>Cédula</b><span>${esc(perfilApi.cedula_profesional)}</span>` : ''}
         </div>
         <div class="pie">
           <button type="button" class="btn btn-p" onclick="document.getElementById('modalMiCuenta').classList.remove('on')">Cerrar</button>
@@ -212,7 +182,6 @@
 
   async function inicializarLayoutPrivado({ rol, navActivo }) {
     const sesion = global.MedicDateApi.obtenerSesion(rol);
-    inyectarBarraDemo(sesion);
 
     const slotLateral = document.getElementById('slotLateral');
     const esDoctor = rol === 'medico';
@@ -236,7 +205,7 @@
       if (linkCuenta) {
         linkCuenta.addEventListener('click', (e) => {
           e.preventDefault();
-          abrirModalMiCuenta(sesion);
+          abrirModalMiCuenta(sesion, rol);
         });
       }
     }
@@ -244,8 +213,10 @@
     const etiquetaRol = esDoctor ? 'Médico' : 'Asistente';
     const av = document.getElementById('topbarAvatar');
     const nom = document.getElementById('topbarUsuario');
-    if (av && sesion) av.textContent = iniciales(sesion.nombre);
-    if (nom && sesion) nom.textContent = `${sesion.nombre} · ${etiquetaRol}`;
+    if (sesion && sesion.nombre) {
+      if (av) av.textContent = iniciales(sesion.nombre);
+      if (nom) nom.textContent = `${sesion.nombre} · ${etiquetaRol}`;
+    }
 
     const btnSalir = document.getElementById('btnCerrarSesion');
     if (btnSalir) {

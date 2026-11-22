@@ -1,14 +1,22 @@
 /**
  * Configuración centralizada de APIs web conectada directamente a:
  *   https://medicdate.innego.net/web/apis/medicdate
- * Usa las credenciales reales de la base de datos (ver Credenciales_Prueba_MedicDate.md).
+ * Sin credenciales almacenadas en el cliente; toda la información del perfil,
+ * agenda y pacientes proviene en tiempo real de la API y la base de datos.
  */
 (function (global) {
   'use strict';
 
   const DEFAULT_API_BASE = 'https://medicdate.innego.net/web/apis/medicdate';
 
-  
+  // IDs de rol por defecto en la BD cuando se accede sin sesión previa iniciada
+  const ID_USUARIO_POR_ROL = {
+    administrador: 1,
+    medico: 2,
+    asistente: 4
+  };
+
+  let perfilActual = null;
 
   function obtenerApiBase() {
     if (global.MEDICDATE_API_BASE) {
@@ -26,6 +34,21 @@
   }
 
   function obtenerSesion(rolEsperado) {
+    // 1. Permitir indicar ?id_usuario=X por URL si se desea probar otro usuario de la BD
+    try {
+      const paramsUrl = new URLSearchParams(global.location.search);
+      const idUrl = Number(paramsUrl.get('id_usuario'));
+      if (idUrl > 0) {
+        return {
+          id_usuario: idUrl,
+          rol: rolEsperado || ''
+        };
+      }
+    } catch (_) {
+      // Ignorar
+    }
+
+    // 2. Leer sesión activa de sessionStorage o localStorage si existe
     let sesion = null;
     try {
       const raw = sessionStorage.getItem('usuario') || localStorage.getItem('usuario');
@@ -36,52 +59,38 @@
       sesion = null;
     }
 
-    if (sesion && typeof sesion === 'object') {
-      const correo = String(sesion.correo || '').toLowerCase();
-      if (correo === 'elena.cruz@centromedico.com' || correo === 'luna.reyes.asistente@example.test') {
-        sesion = { ...CUENTAS_BD.asistente };
-      } else if (correo === 'jose.rodriguez@centromedico.com' || correo === 'jose.rodriguez.doc@example.test') {
-        sesion = { ...CUENTAS_BD.medico1 };
-      } else if (correo === 'sofia.flores.doc@medicdate.com') {
-        sesion = { ...CUENTAS_BD.medico2 };
-      }
+    const idPorDefecto = ID_USUARIO_POR_ROL[rolEsperado] || ID_USUARIO_POR_ROL.asistente;
 
+    if (sesion && typeof sesion === 'object') {
       const rol = String(sesion.rol || '').toLowerCase();
       if (!rolEsperado || rol === rolEsperado || (rolEsperado === 'asistente' && rol === 'administrador')) {
-        const base = rol === 'medico'
-          ? (Number(sesion.id_usuario) === 3 ? CUENTAS_BD.medico2 : CUENTAS_BD.medico1)
-          : CUENTAS_BD.asistente;
         return {
-          ...base,
-          ...sesion,
-          id_usuario: Number(sesion.id_usuario) || base.id_usuario,
-          id_empleado: base.id_empleado,
-          nombre: sesion.nombre || base.nombre,
-          correo: sesion.correo || base.correo,
-          rol: rol || rolEsperado
+          id_usuario: Number(sesion.id_usuario) || idPorDefecto,
+          id_empleado: sesion.id_empleado ? Number(sesion.id_empleado) : null,
+          id_sesion: sesion.id_sesion || null,
+          token: sesion.token || null,
+          nombre: sesion.nombre || '',
+          correo: sesion.correo || '',
+          rol: rol || rolEsperado || ''
         };
       }
     }
 
-    const predeterminada = rolEsperado === 'medico' ? CUENTAS_BD.medico1 : CUENTAS_BD.asistente;
-    try {
-      sessionStorage.setItem('usuario', JSON.stringify(predeterminada));
-    } catch (_) {
-      // Ignorar
-    }
-    return { ...predeterminada };
+    // 3. Sin credenciales guardadas: enviar únicamente el id_usuario del rol para que la API cargue de la BD
+    return {
+      id_usuario: idPorDefecto,
+      rol: rolEsperado || ''
+    };
   }
 
-  function activarCuentaDemo(claveCuenta) {
-    const cuenta = CUENTAS_BD[claveCuenta];
-    if (!cuenta) return null;
-    try {
-      sessionStorage.setItem('usuario', JSON.stringify(cuenta));
-      localStorage.setItem('usuario', JSON.stringify(cuenta));
-    } catch (_) {
-      // Ignorar
+  function registrarPerfilCargado(datosPerfil) {
+    if (datosPerfil && typeof datosPerfil === 'object') {
+      perfilActual = { ...perfilActual, ...datosPerfil };
     }
-    return { ...cuenta };
+  }
+
+  function obtenerPerfilCargado() {
+    return perfilActual;
   }
 
   function cerrarSesion() {
@@ -117,8 +126,6 @@
     const ruta = String(rutaRelativa).replace(/^\/+/, '');
     const paramsConAuth = { ...params };
 
-    // Importante: no enviar encabezados personalizados en GET (como Cache-Control)
-    // para evitar que el navegador bloquee la petición por preflight CORS.
     const headers = {
       'Accept': 'application/json'
     };
@@ -132,6 +139,9 @@
       }
       if (sesion.id_usuario) {
         paramsConAuth.id_usuario = sesion.id_usuario;
+      }
+      if (sesion.correo) {
+        paramsConAuth.correo_acceso = sesion.correo;
       }
     }
 
@@ -167,14 +177,18 @@
       throw err;
     }
 
+    if (json && (json.usuario || json.medico)) {
+      registrarPerfilCargado(json.usuario || json.medico);
+    }
+
     return json;
   }
 
   global.MedicDateApi = {
-    CUENTAS_BD,
     obtenerApiBase,
     obtenerSesion,
-    activarCuentaDemo,
+    registrarPerfilCargado,
+    obtenerPerfilCargado,
     cerrarSesion,
     peticionApi
   };
