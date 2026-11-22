@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Mi agenda (Médico)</title>
+  <link rel="stylesheet" href="../../../styles/panel_privado.css">
+</head>
+<body>
+  <div class="priv">
+    <div id="slotLateral"></div>
+
+    <main class="pc">
+      <header class="bar">
+        <h1>Mi agenda</h1>
+        <div class="u">
+          <span class="av" id="topbarAvatar">DR</span>
+          <span id="topbarUsuario">Médico</span>
+          <a class="btn btn-o btn-s" href="../../../index.html">Ver portal</a>
+          <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <div id="alertaError" class="aviso-alerta oculto" role="alert"></div>
+
+      <section class="panel">
+        <div class="filt" style="align-items:flex-end;">
+          <div class="filtro-grupo" role="group" aria-label="Filtrar por lapso">
+            <button type="button" class="fbtn on" data-lapso="hoy" aria-pressed="true">Hoy</button>
+            <button type="button" class="fbtn" data-lapso="semana" aria-pressed="false">Próximos 7 días</button>
+            <button type="button" class="fbtn" data-lapso="mes" aria-pressed="false">Este mes</button>
+            <button type="button" class="fbtn" data-lapso="todas" aria-pressed="false">Todas</button>
+          </div>
+
+          <div class="campo">
+            <label for="filtroFechaDoc">Día específico</label>
+            <input id="filtroFechaDoc" type="date">
+          </div>
+
+          <div class="campo">
+            <label for="filtroEstadoDoc">Estado</label>
+            <select id="filtroEstadoDoc">
+              <option value="">Todos</option>
+              <option value="programada">Programadas (activas)</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmada">Confirmada</option>
+              <option value="en_progreso">En progreso</option>
+              <option value="completada">Atendida</option>
+              <option value="cancelada">Cancelada</option>
+              <option value="inasistencia">Inasistencia</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn btn-o btn-s" id="btnLimpiarFiltrosDoc">Limpiar</button>
+        </div>
+
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Día</th>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMiAgenda"></tbody>
+          </table>
+          <div id="estadoVacio" class="vacio">Cargando tu agenda...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="slotModalCita"></div>
+  <div id="toast" aria-live="polite"></div>
+
+  <script src="../../../service/api_config.js"></script>
+  <script src="../../../service/doctor_service.js"></script>
+  <script src="../../../scripts/ui_common.js"></script>
+  <script src="../../../scripts/filtros.js"></script>
+  <script src="../../../scripts/doctor_agenda.js"></script>
+</body>
+</html>

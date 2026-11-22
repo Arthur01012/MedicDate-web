@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Resumen del médico</title>
+  <link rel="stylesheet" href="../../../styles/panel_privado.css">
+</head>
+<body>
+  <div class="priv">
+    <div id="slotLateral"></div>
+
+    <main class="pc">
+      <header class="bar">
+        <h1>Resumen</h1>
+        <div class="u">
+          <span class="av" id="topbarAvatar">DR</span>
+          <span id="topbarUsuario">Médico</span>
+          <a class="btn btn-o btn-s" href="../../../index.html">Ver portal</a>
+          <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <div id="alertaError" class="aviso-alerta oculto" role="alert"></div>
+
+      <section class="panel" style="display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;">
+        <div>
+          <h2 id="saludoDoctor" style="font-size:22px;">Hola, Médico</h2>
+          <p id="subtituloDoctor" style="margin:4px 0 0; color:var(--suave);">Cargando información de tu horario...</p>
+        </div>
+        <a class="btn btn-o btn-s" href="./mi_agenda.html">Ir a mi agenda</a>
+      </section>
+
+      <section class="resu" aria-label="Indicadores del médico">
+        <div class="card"><b id="kpiHoy">0</b><span>Citas hoy</span></div>
+        <div class="card"><b id="kpiPorAtender">0</b><span>Por atender hoy</span></div>
+        <div class="card"><b id="kpiAtendidasHoy">0</b><span>Atendidas hoy</span></div>
+        <div class="card"><b id="kpiProximos7">0</b><span>Próximos 7 días</span></div>
+        <div class="card"><b id="kpiPendientesMes">0</b><span>Pendientes del mes</span></div>
+        <div class="card"><b id="kpiTotalMes">0</b><span>Total del mes</span></div>
+        <div class="card"><b id="kpiPacientes">0</b><span>Pacientes</span></div>
+      </section>
+
+      <div class="grid g2">
+        <section class="panel">
+          <h3 style="font-size:18px; margin-bottom:12px;">Siguiente por atender</h3>
+          <div id="boxSiguienteCita">
+            <p class="vacio" style="padding:16px 0;">Cargando próxima cita...</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3 style="font-size:18px; margin-bottom:12px;">Citas de los próximos 7 días</h3>
+          <div class="grafica-barras" id="grafica7Dias"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+          <h3 style="font-size:18px;">Agenda de hoy</h3>
+          <a class="btn btn-o btn-s" href="./mi_agenda.html">Ver toda mi agenda</a>
+        </div>
+
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Día</th>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAgendaHoy"></tbody>
+          </table>
+          <div id="estadoVacioHoy" class="vacio">Cargando agenda de hoy...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="slotModalCita"></div>
+  <div id="toast" aria-live="polite"></div>
+
+  <script src="../../../service/api_config.js"></script>
+  <script src="../../../service/doctor_service.js"></script>
+  <script src="../../../scripts/ui_common.js"></script>
+  <script src="../../../scripts/doctor_resumen.js"></script>
+</body>
+</html>

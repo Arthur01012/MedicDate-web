@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Mis pacientes (Médico)</title>
+  <link rel="stylesheet" href="../../../styles/panel_privado.css">
+</head>
+<body>
+  <div class="priv">
+    <div id="slotLateral"></div>
+
+    <main class="pc">
+      <header class="bar">
+        <h1>Mis pacientes</h1>
+        <div class="u">
+          <span class="av" id="topbarAvatar">DR</span>
+          <span id="topbarUsuario">Médico</span>
+          <a class="btn btn-o btn-s" href="../../../index.html">Ver portal</a>
+          <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <div id="alertaError" class="aviso-alerta oculto" role="alert"></div>
+
+      <section class="panel">
+        <div class="filt">
+          <div class="campo" style="min-width: 280px; flex: 1; max-width: 420px;">
+            <label for="inputBuscarMisPacientes">Buscar</label>
+            <input id="inputBuscarMisPacientes" type="search" placeholder="Nombre del paciente, correo o alergia">
+          </div>
+          <button type="button" class="btn btn-o btn-s" id="btnLimpiarBusquedaDoc">Limpiar</button>
+        </div>
+
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Edad</th>
+                <th>Citas</th>
+                <th>Última consulta</th>
+                <th>Próxima cita</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMisPacientes"></tbody>
+          </table>
+          <div id="estadoVacio" class="vacio">Cargando tus pacientes...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="slotModalPaciente"></div>
+  <div id="toast" aria-live="polite"></div>
+
+  <script src="../../../service/api_config.js"></script>
+  <script src="../../../service/doctor_service.js"></script>
+  <script src="../../../scripts/ui_common.js"></script>
+  <script src="../../../scripts/filtros.js"></script>
+  <script src="../../../scripts/doctor_pacientes.js"></script>
+</body>
+</html>

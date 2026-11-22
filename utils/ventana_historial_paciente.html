@@ -1,0 +1,33 @@
+<div class="modal-backdrop" id="modalPaciente" role="dialog" aria-modal="true" aria-labelledby="modalPacienteTitulo">
+  <div class="mc">
+    <h3 id="modalPacienteTitulo">Ficha del paciente</h3>
+
+    <div class="kv">
+      <b>Edad</b><span id="mpEdad">—</span>
+      <b>Teléfono</b><span id="mpTelefono">—</span>
+      <b>Correo</b><span id="mpCorreo">—</span>
+    </div>
+
+    <!-- Sección exclusiva para el médico: alergias y notas médicas del paciente -->
+    <div id="mpSeccionDoctor" class="oculto" style="margin-top: 16px;">
+      <div class="campo">
+        <label for="mpAlergias">Alergias</label>
+        <input id="mpAlergias" type="text" placeholder="Ej. Penicilina, polen (o Ninguna)">
+      </div>
+      <div class="campo">
+        <label for="mpNotasMedicas">Notas médicas generales</label>
+        <textarea id="mpNotasMedicas" placeholder="Antecedentes relevantes o notas generales del paciente..."></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+        <button type="button" class="btn btn-o btn-s" id="btnGuardarExpedientePaciente">Guardar alergias y notas</button>
+      </div>
+    </div>
+
+    <h4 id="mpTituloHistorial" style="margin: 20px 0 10px;">Citas</h4>
+    <div id="mpListaCitas"></div>
+
+    <div class="pie">
+      <button type="button" class="btn btn-p" id="btnCerrarModalPaciente">Cerrar</button>
+    </div>
+  </div>
+</div>
