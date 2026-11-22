@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Pacientes</title>
+  <link rel="stylesheet" href="../../../styles/panel_privado.css">
+</head>
+<body>
+  <div class="priv">
+    <div id="slotLateral"></div>
+
+    <div class="pc">
+      <div class="bar">
+        <h1>Pacientes</h1>
+        <div class="u">
+          <span class="av" id="topbarAvatar">AS</span>
+          <span id="topbarUsuario">Asistente</span>
+          <a class="btn btn-o btn-s" href="../../../index.html">Ver portal</a>
+          <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="filt">
+          <div class="campo" style="min-width:280px">
+            <label for="inputBuscarPaciente">Buscar</label>
+            <input id="inputBuscarPaciente" placeholder="Nombre o correo">
+          </div>
+        </div>
+
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Edad</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPacientes"></tbody>
+          </table>
+          <div id="estadoVacio" class="vacio oculto">No se encontraron pacientes.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="slotModalPaciente"></div>
+  <div id="toast"></div>
+
+  <script src="../../../service/api_config.js"></script>
+  <script src="../../../service/asistente_service.js"></script>
+  <script src="../../../scripts/ui_common.js"></script>
+  <script src="../../../scripts/filtros.js"></script>
+  <script src="../../../scripts/asistente_pacientes.js"></script>
+</body>
+</html>

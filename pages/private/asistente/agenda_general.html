@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Agenda general</title>
+  <link rel="stylesheet" href="../../../styles/panel_privado.css">
+</head>
+<body>
+  <div class="priv">
+    <div id="slotLateral"></div>
+
+    <div class="pc">
+      <div class="bar">
+        <h1>Agenda general</h1>
+        <div class="u">
+          <span class="av" id="topbarAvatar">AS</span>
+          <span id="topbarUsuario">Asistente</span>
+          <a class="btn btn-o btn-s" href="../../../index.html">Ver portal</a>
+          <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="resu">
+        <div class="card"><b id="kpiCitasHoy">0</b><span>Citas de hoy</span></div>
+        <div class="card"><b id="kpiProgramadas">0</b><span>Programadas</span></div>
+        <div class="card"><b id="kpiPacientes">0</b><span>Pacientes</span></div>
+        <div class="card"><b id="kpiMedicos">0</b><span>Médicos</span></div>
+      </div>
+
+      <div class="panel">
+        <p style="margin:0 0 14px;color:var(--suave)">Las citas las reservan los pacientes desde la app móvil. Aquí puedes consultarlas.</p>
+
+        <div class="filt">
+          <div class="campo">
+            <label for="filtroFecha">Día</label>
+            <input id="filtroFecha" type="date">
+          </div>
+          <div class="campo">
+            <label for="filtroMedico">Médico</label>
+            <select id="filtroMedico">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="filtroEstado">Estado</label>
+            <select id="filtroEstado">
+              <option value="">Todos</option>
+              <option value="Programada">Programada</option>
+              <option value="Atendida">Atendida</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-o btn-s" id="btnLimpiarFiltros">Limpiar</button>
+        </div>
+
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Día</th>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Médico</th>
+                <th>Especialidad</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCitas"></tbody>
+          </table>
+          <div id="estadoVacio" class="vacio oculto">No hay citas con esos filtros.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="slotModalCita"></div>
+  <div id="toast"></div>
+
+  <script src="../../../service/api_config.js"></script>
+  <script src="../../../service/asistente_service.js"></script>
+  <script src="../../../scripts/ui_common.js"></script>
+  <script src="../../../scripts/filtros.js"></script>
+  <script src="../../../scripts/asistente_agenda.js"></script>
+</body>
+</html>
