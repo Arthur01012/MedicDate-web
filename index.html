@@ -1,11 +1,287 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-    </head>
-    <body>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedicDate | Centro Médico Sagrado Corazón</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/estilos.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
 
-    </body>
+    <!-- Encabezado -->
+    <header>
+        <nav class="navbar navbar-expand-md contenedor py-3">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <img src="img/logo.svg" width="40" height="40" alt="MedicDate">
+                <span class="logo-texto">MedicDate</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="menuPrincipal">
+                <ul class="navbar-nav align-items-md-center gap-1">
+                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="especialidades.html">Especialidades</a></li>
+                    <li class="nav-item"><a class="nav-link" href="medicos.html">Médicos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+                    <li class="nav-item ms-md-2"><a class="btn btn-outline-primary d-flex align-items-center" style="height: 44px" href="login.html">Acceso del personal</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1">
+        <!-- Presentación (carrusel con las imágenes de "Imágenes del hero") -->
+        <section class="hero-full">
+            <div id="carruselHero" class="carousel slide hero-carrusel" aria-label="Novedades del centro médico">
+                <div class="carousel-indicators" id="puntosHero"></div>
+                <div class="carousel-inner" id="slidesHero"></div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carruselHero" data-bs-slide="prev" aria-label="Anterior">
+                    <span class="flecha"><i class="bi bi-chevron-left"></i></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carruselHero" data-bs-slide="next" aria-label="Siguiente">
+                    <span class="flecha"><i class="bi bi-chevron-right"></i></span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Servicios -->
+        <section class="contenedor py-5" id="servicios">
+            <div class="mb-4">
+                <h2 class="seccion-titulo m-0">Nuestros servicios</h2>
+                <p class="seccion-texto m-0 mt-2">Atención médica para toda la familia, con citas que reservas desde tu celular.</p>
+            </div>
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="servicio">
+                        <span class="servicio-icono"><i class="bi bi-clipboard2-pulse"></i></span>
+                        <h3>Medicina general</h3>
+                        <p>Consulta, revisión y seguimiento de tu salud, además de recetas y certificados médicos.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="servicio">
+                        <span class="servicio-icono"><i class="bi bi-emoji-smile"></i></span>
+                        <h3>Pediatría</h3>
+                        <p>Control del niño sano, vacunas y atención de enfermedades comunes en la infancia.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="servicio">
+                        <span class="servicio-icono"><i class="bi bi-heart-pulse"></i></span>
+                        <h3>Cardiología</h3>
+                        <p>Revisión del corazón, control de la presión arterial y estudios cardiológicos.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="servicio">
+                        <span class="servicio-icono"><i class="bi bi-gender-female"></i></span>
+                        <h3>Ginecología</h3>
+                        <p>Control prenatal, planificación familiar y revisiones preventivas.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="servicio">
+                        <span class="servicio-icono"><i class="bi bi-shield-plus"></i></span>
+                        <h3>Odontología</h3>
+                        <p>Limpieza, revisión dental y tratamiento de caries para toda la familia.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <div class="servicio">
+                        <span class="servicio-icono"><i class="bi bi-droplet-half"></i></span>
+                        <h3>Laboratorio clínico</h3>
+                        <p>Análisis de sangre y orina, con resultados entregados en el mismo centro.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Médicos -->
+        <section class="seccion-tonal py-5" id="medicos">
+            <div class="contenedor">
+                <div class="mb-4">
+                    <h2 class="seccion-titulo m-0">Nuestros médicos</h2>
+                    <p class="seccion-texto m-0 mt-2">Profesionales con experiencia que te atienden con calidez.</p>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="medico">
+                            <span class="avatar avatar-grande">LM</span>
+                            <h3>Dra. Laura Méndez</h3>
+                            <span class="medico-esp">Medicina general</span>
+                            <p>Más de 10 años de experiencia en atención familiar y medicina preventiva.</p>
+                            <span class="dias-chip"><i class="bi bi-calendar-check"></i> Lunes a viernes</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="medico">
+                            <span class="avatar avatar-grande">JR</span>
+                            <h3>Dr. José Rodríguez</h3>
+                            <span class="medico-esp">Cardiología</span>
+                            <p>Especialista en el cuidado del corazón y el control de la presión arterial.</p>
+                            <span class="dias-chip"><i class="bi bi-calendar-check"></i> Martes, jueves y sábado</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="medico">
+                            <span class="avatar avatar-grande">AT</span>
+                            <h3>Dra. Ana Torres</h3>
+                            <span class="medico-esp">Pediatría</span>
+                            <p>Atiende a bebés, niños y adolescentes con un trato paciente y cercano.</p>
+                            <span class="dias-chip"><i class="bi bi-calendar-check"></i> Lunes, miércoles y viernes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Horario -->
+        <section class="contenedor py-5" id="horario">
+            <h2 class="seccion-titulo mb-4">Días y horario de atención</h2>
+            <div class="horario-dias" id="diasSemana">
+                <div class="dia" data-dia="1">
+                    <span class="dia-nombre">Lunes</span>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="dia-horas">24 horas</span>
+                </div>
+                <div class="dia" data-dia="2">
+                    <span class="dia-nombre">Martes</span>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="dia-horas">24 horas</span>
+                </div>
+                <div class="dia" data-dia="3">
+                    <span class="dia-nombre">Miércoles</span>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="dia-horas">24 horas</span>
+                </div>
+                <div class="dia" data-dia="4">
+                    <span class="dia-nombre">Jueves</span>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="dia-horas">24 horas</span>
+                </div>
+                <div class="dia" data-dia="5">
+                    <span class="dia-nombre">Viernes</span>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="dia-horas">24 horas</span>
+                </div>
+                <div class="dia" data-dia="6">
+                    <span class="dia-nombre">Sábado</span>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="dia-horas">24 horas</span>
+                </div>
+                <div class="dia" data-dia="0">
+                    <span class="dia-nombre">Domingo</span>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="dia-horas">24 horas</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reseñas -->
+        <section class="seccion-tonal py-5" id="resenas">
+            <div class="contenedor">
+                <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+                    <div>
+                        <h2 class="seccion-titulo m-0">Lo que dicen nuestros pacientes</h2>
+                        <p class="seccion-texto m-0 mt-2">Opiniones de quienes ya se atendieron en el centro.</p>
+                    </div>
+                    <div class="calificacion">
+                        <strong>4.4</strong>
+                        <span>
+                            <span class="estrellas" aria-label="4.4 de 5 estrellas">★★★★☆</span>
+                            <small class="d-block">Promedio en Google (19 opiniones)</small>
+                        </span>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <figure class="resena">
+                            <span class="estrellas" aria-label="5 de 5 estrellas">★★★★★</span>
+                            <blockquote>Reservé mi cita desde el celular en un minuto y me atendieron a la hora. Muy buen trato.</blockquote>
+                            <figcaption><span class="avatar">MG</span><span><strong>María G.</strong><small>Medicina general</small></span></figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-md-4">
+                        <figure class="resena">
+                            <span class="estrellas" aria-label="5 de 5 estrellas">★★★★★</span>
+                            <blockquote>La doctora fue muy paciente con mi hijo y nos explicó todo con claridad. Lo recomiendo.</blockquote>
+                            <figcaption><span class="avatar">CR</span><span><strong>Carlos R.</strong><small>Pediatría</small></span></figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-md-4">
+                        <figure class="resena">
+                            <span class="estrellas" aria-label="4 de 5 estrellas">★★★★☆</span>
+                            <blockquote>Instalaciones limpias y personal amable. Ya no tengo que llamar para saber si hay lugar.</blockquote>
+                            <figcaption><span class="avatar">SH</span><span><strong>Sofía H.</strong><small>Cardiología</small></span></figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacto y ubicación -->
+        <section class="contenedor py-5" id="ubicacion">
+            <div class="mb-4">
+                <h2 class="seccion-titulo m-0">Contacto y ubicación</h2>
+                <p class="seccion-texto m-0 mt-2">Visítanos o escríbenos, con gusto te ayudamos.</p>
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-5">
+                    <div class="tarjeta-contacto">
+                        <div class="dato-contacto"><span class="servicio-icono"><i class="bi bi-geo-alt"></i></span><span><strong>Dirección</strong>A un lado de maderería "El Pino", Adolfo López Mateos S/N, Tepoxtequito, 43000 Huejutla de Reyes, Hgo.</span></div>
+                        <div class="dato-contacto"><span class="servicio-icono"><i class="bi bi-telephone"></i></span><span><strong>Teléfono</strong><a href="tel:+527717293074">771 729 3074</a></span></div>
+                        <div class="dato-contacto"><span class="servicio-icono"><i class="bi bi-envelope"></i></span><span><strong>Correo</strong>[CORREO DEL CENTRO]</span></div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <!-- Ubicación real del centro (coordenadas de Google Maps) -->
+                    <iframe class="mapa" title="Mapa de ubicación del centro médico" loading="lazy"
+                        src="https://maps.google.com/maps?q=21.1522847,-98.3973462&z=17&output=embed"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="pie">
+        <div class="contenedor pt-4 pb-3">
+            <div class="row g-4 justify-content-between">
+                <div class="col-md-4">
+                    <a class="d-flex align-items-center gap-2 mb-2" href="index.html" style="min-height: 0">
+                        <img src="img/logo.svg" width="36" height="36" alt="MedicDate">
+                        <span class="logo-texto" style="font-size: 18px">MedicDate</span>
+                    </a>
+                    <p class="m-0" style="font-size: 14px; color: var(--texto-suave)">Centro Médico Sagrado Corazón. Gestión de citas médicas.</p>
+                </div>
+                <div class="col-6 col-md-auto">
+                    <h2>Explorar</h2>
+                    <a href="index.html">Inicio</a>
+                    <a href="especialidades.html">Especialidades</a>
+                    <a href="medicos.html">Médicos</a>
+                    <a href="contacto.html">Contacto</a>
+                </div>
+                <div class="col-12 col-md-4">
+                    <h2>Contacto</h2>
+                    <span class="dato">A un lado de maderería "El Pino", Adolfo López Mateos S/N, Tepoxtequito, 43000 Huejutla de Reyes, Hgo.</span>
+                    <span class="dato"><a href="tel:+527717293074">771 729 3074</a></span>
+                    <span class="dato">Abierto las 24 horas, todos los días</span>
+                </div>
+                <div class="col-6 col-md-auto">
+                    <h2>Personal</h2>
+                    <a class="destacado" href="login.html">Acceso del personal</a>
+                </div>
+            </div>
+        </div>
+        <div class="contenedor pie-final">© 2026 Centro Médico Sagrado Corazón · MedicDate</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/hero-datos.js"></script>
+    <script src="js/inicio.js"></script>
+</body>
 </html>
