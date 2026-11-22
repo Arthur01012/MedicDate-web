@@ -3,35 +3,27 @@
     <h3 id="modalCitaTitulo">Detalle de la cita</h3>
 
     <div class="kv" id="modalCitaDatos">
-      <b>Fecha y hora</b><span id="mcFechaHora">—</span>
+      <b>Fecha</b><span id="mcFechaHora">—</span>
       <b>Paciente</b><span id="mcPaciente">—</span>
       <b>Teléfono</b><span id="mcTelefono">—</span>
       <b class="solo-asistente">Médico</b><span class="solo-asistente" id="mcMedico">—</span>
       <b class="solo-asistente">Especialidad</b><span class="solo-asistente" id="mcEspecialidad">—</span>
-      <b>Tipo de atención</b><span id="mcTipoAtencion">—</span>
-      <b>Consultorio</b><span id="mcConsultorio">—</span>
       <b>Motivo</b><span id="mcMotivo">—</span>
       <b>Estado</b><span id="mcEstado">—</span>
     </div>
 
-    <!-- Sección exclusiva para el médico (oculta para el asistente) -->
     <div id="mcSeccionDoctor" class="oculto">
-      <div id="mcAlergiasWrap" class="caja-alergias oculto">
-        <strong>Alergias registradas:</strong> <span id="mcAlergias"></span>
+      <div class="campo" style="margin-top:16px">
+        <label for="mcNotas">Notas de la consulta (solo las ves tú)</label>
+        <textarea id="mcNotas" placeholder="Escribe aquí tus notas…"></textarea>
       </div>
-
-      <div class="campo" style="margin-top: 16px;">
-        <label for="mcNotas">Notas internas de la consulta (solo las ves tú)</label>
-        <textarea id="mcNotas" placeholder="Escribe aquí tus notas clínicas de esta consulta..."></textarea>
-      </div>
-
-      <p id="mcAvisoFecha" class="oculto" style="margin: 0 0 12px; font-size: 14px; color: var(--suave);">
-        Podrás marcar esta cita como atendida a partir de la fecha programada.
+      <p id="mcAvisoFecha" class="oculto" style="margin:0 0 12px;font-size:14px;color:var(--suave)">
+        Podrás marcarla como atendida desde el día de la cita.
       </p>
     </div>
 
     <div class="pie">
-      <button type="button" class="btn btn-o" id="btnCerrarModalCita">Cerrar</button>
+      <button type="button" class="btn btn-p" id="btnCerrarModalCita">Cerrar</button>
       <button type="button" class="btn btn-o oculto" id="btnGuardarNotas">Guardar notas</button>
       <button type="button" class="btn btn-p oculto" id="btnMarcarAtendida">Marcar como atendida</button>
     </div>

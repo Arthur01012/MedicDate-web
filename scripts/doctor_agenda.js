@@ -15,9 +15,8 @@
 
   function actualizarBotonesLapso() {
     document.querySelectorAll('[data-lapso]').forEach((btn) => {
-      const activo = !estadoFiltros.fecha && btn.dataset.lapso === estadoFiltros.lapso;
+      const activo = btn.dataset.lapso === estadoFiltros.lapso;
       btn.classList.toggle('on', activo);
-      btn.setAttribute('aria-pressed', String(activo));
     });
   }
 
@@ -48,28 +47,13 @@
   }
 
   async function cargarAgenda() {
-    const tbody = document.getElementById('tbodyMiAgenda');
-    const vacio = document.getElementById('estadoVacio');
-    const alerta = document.getElementById('alertaError');
-
-    alerta.classList.add('oculto');
-    vacio.textContent = 'Cargando tu agenda...';
-    vacio.classList.remove('oculto');
-    tbody.innerHTML = '';
     actualizarBotonesLapso();
-
-    try {
-      const data = await Service.obtenerAgendaMedico(estadoFiltros);
-      if (data.medico && data.medico.nombre) {
-        document.getElementById('topbarUsuario').textContent = `${data.medico.nombre} · Médico`;
-        document.getElementById('topbarAvatar').textContent = UI.iniciales(data.medico.nombre);
-      }
-      renderTabla(data.citas || []);
-    } catch (error) {
-      vacio.textContent = 'No se pudo cargar tu agenda.';
-      alerta.textContent = error.message || 'Error al consultar la API de agenda del médico.';
-      alerta.classList.remove('oculto');
+    const data = await Service.obtenerAgendaMedico(estadoFiltros);
+    if (data.medico && data.medico.nombre) {
+      document.getElementById('topbarUsuario').textContent = `${data.medico.nombre} · Médico`;
+      document.getElementById('topbarAvatar').textContent = UI.iniciales(data.medico.nombre);
     }
+    renderTabla(data.citas || []);
   }
 
   async function abrirModalCita(idCita) {
@@ -85,21 +69,12 @@
         ? `${c.paciente.nombre} · ${c.paciente.edad} años`
         : (c.paciente?.nombre || '—');
       document.getElementById('mcTelefono').textContent = c.paciente?.telefono || '—';
-      document.getElementById('mcTipoAtencion').textContent = c.tipo_atencion || '—';
-      document.getElementById('mcConsultorio').textContent = c.consultorio || '—';
       document.getElementById('mcMotivo').textContent = c.motivo || '—';
       document.getElementById('mcEstado').innerHTML = UI.badgeEstado(c.estado, c.estado_etiqueta);
 
       document.querySelectorAll('#modalCita .solo-asistente').forEach((el) => el.classList.add('oculto'));
       document.getElementById('mcSeccionDoctor').classList.remove('oculto');
-
-      const alergiasWrap = document.getElementById('mcAlergiasWrap');
-      if (c.paciente?.alergias) {
-        document.getElementById('mcAlergias').textContent = c.paciente.alergias;
-        alergiasWrap.classList.remove('oculto');
-      } else {
-        alergiasWrap.classList.add('oculto');
-      }
+      document.getElementById('btnCerrarModalCita').className = 'btn btn-o';
 
       const txtNotas = document.getElementById('mcNotas');
       txtNotas.value = c.notas_internas || '';
@@ -112,8 +87,8 @@
       btnGuardar.classList.toggle('oculto', !c.puede_editar_notas);
       btnAtender.classList.toggle('oculto', !c.puede_marcar_atendida);
 
-      const esProgramada = ['pendiente', 'confirmada', 'en_progreso'].includes(c.estado);
-      avisoFecha.classList.toggle('oculto', !(esProgramada && !c.puede_marcar_atendida));
+      const estEtiqueta = String(c.estado_etiqueta || c.estado || '');
+      avisoFecha.classList.toggle('oculto', !(estEtiqueta === 'Programada' && !c.puede_marcar_atendida));
 
       modalCitaCtrl.backdrop.classList.add('on');
     } catch (error) {
@@ -128,7 +103,7 @@
     try {
       const resp = await Service.guardarNotasCita(citaActivaId, notas, marcarAtendida);
       modalCitaCtrl.cerrar();
-      UI.toast(resp.mensaje || 'Cambios guardados.');
+      UI.toast(resp.mensaje || (marcarAtendida ? 'Cita marcada como atendida.' : 'Notas guardadas.'));
       await cargarAgenda();
     } catch (error) {
       UI.toast(error.message || 'No se pudieron guardar los cambios.');
@@ -139,33 +114,17 @@
     await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'agenda' });
     modalCitaCtrl = await UI.cargarModalCita();
 
-    const inpFecha = document.getElementById('filtroFechaDoc');
     const selEstado = document.getElementById('filtroEstadoDoc');
-    const btnLimpiar = document.getElementById('btnLimpiarFiltrosDoc');
 
     document.querySelectorAll('[data-lapso]').forEach((btn) => {
       btn.addEventListener('click', () => {
         estadoFiltros.lapso = btn.dataset.lapso;
-        estadoFiltros.fecha = '';
-        inpFecha.value = '';
         cargarAgenda();
       });
     });
 
-    inpFecha.addEventListener('change', () => {
-      estadoFiltros.fecha = inpFecha.value;
-      cargarAgenda();
-    });
-
     selEstado.addEventListener('change', () => {
       estadoFiltros.estado = selEstado.value;
-      cargarAgenda();
-    });
-
-    btnLimpiar.addEventListener('click', () => {
-      estadoFiltros = Filtros.limpiarFiltros('doctor_agenda');
-      inpFecha.value = '';
-      selEstado.value = '';
       cargarAgenda();
     });
 

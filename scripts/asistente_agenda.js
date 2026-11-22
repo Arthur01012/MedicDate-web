@@ -47,7 +47,7 @@
       <tr>
         <td>${UI.fechaCorta(c.fecha)}</td>
         <td>${UI.esc(c.hora)}</td>
-        <td><b>${UI.esc(c.paciente)}</b></td>
+        <td>${UI.esc(c.paciente)}</td>
         <td>${UI.esc(c.medico)}</td>
         <td>${UI.esc(c.especialidad)}</td>
         <td>${UI.badgeEstado(c.estado, c.estado_etiqueta)}</td>
@@ -59,29 +59,14 @@
   }
 
   async function cargarAgenda() {
-    const tbody = document.getElementById('tbodyCitas');
-    const vacio = document.getElementById('estadoVacio');
-    const alerta = document.getElementById('alertaError');
-
-    alerta.classList.add('oculto');
-    vacio.textContent = 'Cargando agenda...';
-    vacio.classList.remove('oculto');
-    tbody.innerHTML = '';
-
-    try {
-      const data = await Service.obtenerAgendaGeneral(estadoFiltros);
-      if (data.usuario && data.usuario.nombre) {
-        document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
-        document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
-      }
-      renderResumen(data.resumen || {});
-      poblarSelectMedicos(data.medicos || []);
-      renderTablaCitas(data.citas || []);
-    } catch (error) {
-      vacio.textContent = 'No se pudo cargar la agenda.';
-      alerta.textContent = error.message || 'Error al consultar la API de agenda general.';
-      alerta.classList.remove('oculto');
+    const data = await Service.obtenerAgendaGeneral(estadoFiltros);
+    if (data.usuario && data.usuario.nombre) {
+      document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
+      document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
     }
+    renderResumen(data.resumen || {});
+    poblarSelectMedicos(data.medicos || []);
+    renderTablaCitas(data.citas || []);
   }
 
   async function abrirDetalleCita(idCita) {
@@ -96,14 +81,12 @@
       document.getElementById('mcTelefono').textContent = c.paciente?.telefono || '—';
       document.getElementById('mcMedico').textContent = c.medico?.nombre || '—';
       document.getElementById('mcEspecialidad').textContent = c.especialidad || '—';
-      document.getElementById('mcTipoAtencion').textContent = c.tipo_atencion || '—';
-      document.getElementById('mcConsultorio').textContent = c.consultorio || '—';
       document.getElementById('mcMotivo').textContent = c.motivo || '—';
       document.getElementById('mcEstado').innerHTML = UI.badgeEstado(c.estado, c.estado_etiqueta);
 
-      // Asistente: mostrar médico/especialidad, ocultar notas y botones de médico
       document.querySelectorAll('#modalCita .solo-asistente').forEach((el) => el.classList.remove('oculto'));
       document.getElementById('mcSeccionDoctor').classList.add('oculto');
+      document.getElementById('btnCerrarModalCita').className = 'btn btn-p';
       document.getElementById('btnGuardarNotas').classList.add('oculto');
       document.getElementById('btnMarcarAtendida').classList.add('oculto');
 

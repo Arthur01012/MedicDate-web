@@ -15,7 +15,7 @@
     if (!medico) return;
     document.getElementById('saludoDoctor').textContent = `Hola, ${medico.nombre}`;
     document.getElementById('subtituloDoctor').textContent =
-      `${medico.especialidades || 'Medicina general'} · Atiendes ${medico.dias_atencion || 'según horario'}, de ${medico.horario || 'por definir'}`;
+      `${medico.especialidades || 'Medicina General'} · Atiendes ${medico.dias_atencion || 'Lun a Vie'}, de ${medico.horario || '08:00 a 14:00'}`;
 
     document.getElementById('topbarUsuario').textContent = `${medico.nombre} · Médico`;
     document.getElementById('topbarAvatar').textContent = UI.iniciales(medico.nombre);
@@ -26,25 +26,23 @@
     document.getElementById('kpiPorAtender').textContent = r.por_atender_hoy ?? 0;
     document.getElementById('kpiAtendidasHoy').textContent = r.atendidas_hoy ?? 0;
     document.getElementById('kpiProximos7').textContent = r.proximos_7_dias ?? 0;
-    document.getElementById('kpiTotalMes').textContent = r.total_mes ?? 0;
-    document.getElementById('kpiPendientesMes').textContent = r.pendientes_mes ?? 0;
     document.getElementById('kpiPacientes').textContent = r.pacientes ?? 0;
   }
 
   function renderSiguienteCita(sig) {
     const box = document.getElementById('boxSiguienteCita');
     if (!sig) {
-      box.innerHTML = '<p class="vacio" style="padding: 16px 0;">No tienes citas pendientes.</p>';
+      box.innerHTML = '<p class="vacio">No tienes citas pendientes.</p>';
       return;
     }
 
     box.innerHTML = `
-      <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
         <div class="ic g">${UI.esc(UI.iniciales(sig.paciente))}</div>
-        <div style="flex:1; min-width:180px;">
-          <b style="font-size:17px;">${UI.esc(sig.paciente)}</b>
-          <div style="color:var(--suave); font-size:14px;">${UI.fechaCorta(sig.fecha)} · ${UI.esc(sig.hora)}</div>
-          <div style="margin-top:4px;">${UI.esc(sig.motivo)}</div>
+        <div style="flex:1;min-width:180px">
+          <b style="font-size:17px">${UI.esc(sig.paciente)}</b>
+          <div style="color:var(--suave);font-size:14px">${UI.fechaCorta(sig.fecha)} · ${UI.esc(sig.hora)}</div>
+          <div style="margin-top:4px">${UI.esc(sig.motivo)}</div>
         </div>
         <button type="button" class="btn btn-p btn-s" data-abrir-cita="${sig.id_cita}">Abrir cita</button>
       </div>
@@ -54,18 +52,19 @@
   function renderGrafica(dias) {
     const cont = document.getElementById('grafica7Dias');
     if (!dias || dias.length === 0) {
-      cont.innerHTML = '<p class="vacio">Sin datos para mostrar.</p>';
+      cont.innerHTML = '';
       return;
     }
-    const max = Math.max(1, ...dias.map((d) => d.total || 0));
+    const mx = Math.max(1, ...dias.map((d) => d.total || 0));
     cont.innerHTML = dias.map((d) => {
-      const altura = Math.max(6, Math.round(((d.total || 0) / max) * 82));
-      const color = d.es_hoy ? 'var(--azul)' : 'var(--azul-claro)';
+      const altura = Math.max(4, Math.round(((d.total || 0) / mx) * 80));
+      const bg = d.es_hoy ? 'var(--azul)' : 'var(--azul-claro)';
+      const diaTexto = UI.fechaCorta(d.fecha).split(' ')[0];
       return `
-        <div class="grafica-col">
-          <div class="grafica-num">${d.total || 0}</div>
-          <div class="grafica-barra" style="height:${altura}px; background:${color};"></div>
-          <div class="grafica-dia">${UI.esc(d.dia)}</div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:13px;font-weight:700">${d.total || 0}</div>
+          <div style="height:${altura}px;background:${bg};border-radius:6px 6px 0 0;margin-top:4px"></div>
+          <div style="font-size:12px;color:var(--suave);margin-top:4px">${UI.esc(diaTexto)}</div>
         </div>
       `;
     }).join('');
@@ -77,7 +76,7 @@
 
     if (!citas || citas.length === 0) {
       tbody.innerHTML = '';
-      vacio.textContent = 'No tienes citas programadas para hoy.';
+      vacio.textContent = 'No tienes citas para hoy.';
       vacio.classList.remove('oculto');
       return;
     }
@@ -98,20 +97,12 @@
   }
 
   async function cargarResumen() {
-    const alerta = document.getElementById('alertaError');
-    alerta.classList.add('oculto');
-
-    try {
-      const data = await Service.obtenerResumenMedico();
-      renderSaludo(data.medico);
-      renderMetricas(data.resumen || {});
-      renderSiguienteCita(data.siguiente_cita);
-      renderGrafica(data.grafica_7_dias || []);
-      renderAgendaHoy(data.agenda_hoy || []);
-    } catch (error) {
-      alerta.textContent = error.message || 'No se pudo cargar el resumen del médico.';
-      alerta.classList.remove('oculto');
-    }
+    const data = await Service.obtenerResumenMedico();
+    renderSaludo(data.medico);
+    renderMetricas(data.resumen || {});
+    renderSiguienteCita(data.siguiente_cita);
+    renderGrafica(data.grafica_7_dias || []);
+    renderAgendaHoy(data.agenda_hoy || []);
   }
 
   async function abrirModalCitaMedico(idCita) {
@@ -127,21 +118,12 @@
         ? `${c.paciente.nombre} · ${c.paciente.edad} años`
         : (c.paciente?.nombre || '—');
       document.getElementById('mcTelefono').textContent = c.paciente?.telefono || '—';
-      document.getElementById('mcTipoAtencion').textContent = c.tipo_atencion || '—';
-      document.getElementById('mcConsultorio').textContent = c.consultorio || '—';
       document.getElementById('mcMotivo').textContent = c.motivo || '—';
       document.getElementById('mcEstado').innerHTML = UI.badgeEstado(c.estado, c.estado_etiqueta);
 
       document.querySelectorAll('#modalCita .solo-asistente').forEach((el) => el.classList.add('oculto'));
       document.getElementById('mcSeccionDoctor').classList.remove('oculto');
-
-      const alergiasWrap = document.getElementById('mcAlergiasWrap');
-      if (c.paciente?.alergias) {
-        document.getElementById('mcAlergias').textContent = c.paciente.alergias;
-        alergiasWrap.classList.remove('oculto');
-      } else {
-        alergiasWrap.classList.add('oculto');
-      }
+      document.getElementById('btnCerrarModalCita').className = 'btn btn-o';
 
       const txtNotas = document.getElementById('mcNotas');
       txtNotas.value = c.notas_internas || '';
@@ -154,8 +136,8 @@
       btnGuardar.classList.toggle('oculto', !c.puede_editar_notas);
       btnAtender.classList.toggle('oculto', !c.puede_marcar_atendida);
 
-      const esProgramada = ['pendiente', 'confirmada', 'en_progreso'].includes(c.estado);
-      avisoFecha.classList.toggle('oculto', !(esProgramada && !c.puede_marcar_atendida));
+      const estEtiqueta = String(c.estado_etiqueta || c.estado || '');
+      avisoFecha.classList.toggle('oculto', !(estEtiqueta === 'Programada' && !c.puede_marcar_atendida));
 
       modalCitaCtrl.backdrop.classList.add('on');
     } catch (error) {
@@ -170,7 +152,7 @@
     try {
       const resp = await Service.guardarNotasCita(citaActivaId, notas, marcarAtendida);
       modalCitaCtrl.cerrar();
-      UI.toast(resp.mensaje || 'Cambios guardados.');
+      UI.toast(resp.mensaje || (marcarAtendida ? 'Cita marcada como atendida.' : 'Notas guardadas.'));
       await cargarResumen();
     } catch (error) {
       UI.toast(error.message || 'No se pudieron guardar los cambios.');

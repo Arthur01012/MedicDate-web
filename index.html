@@ -1,11 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-    </head>
-    <body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Acceso del personal</title>
+  <link rel="stylesheet" href="./styles/panel_privado.css">
+  <style>
+    .login { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 38px); flex: 1; }
+    .lp { background: linear-gradient(160deg, #0B5FA5, #073d6d); color: #fff; padding: 56px; display: flex; flex-direction: column; justify-content: space-between; }
+    .lp h1 { font-size: 34px; line-height: 1.15; margin: 32px 0 12px; }
+    .lp p { color: #DCE9F7; max-width: 44ch; }
+    .lp ul { list-style: none; padding: 0; margin: 28px 0 0; }
+    .lp li { margin-bottom: 10px; padding-left: 28px; position: relative; }
+    .lp li::before { content: "✓"; position: absolute; left: 0; font-weight: 700; }
+    .lf { display: flex; align-items: center; justify-content: center; padding: 32px; }
+    .lc { background: var(--sup); border-radius: 28px; box-shadow: var(--e2); padding: 40px; width: 100%; max-width: 440px; }
+    .lc h2 { font-size: 26px; margin-bottom: 6px; }
+    .lc .s { color: var(--suave); margin: 0 0 24px; }
+    .ojo { position: relative; }
+    .ojo button { position: absolute; right: 8px; bottom: 6px; background: none; border: 0; color: var(--azul); font-size: 13px; height: 32px; padding: 0 8px; }
+    .demo-cred { background: var(--azul-claro); border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-top: 18px; }
+    @media (max-width: 800px) { .login { grid-template-columns: 1fr; } .lp { display: none; } }
+  </style>
+</head>
+<body>
+  <div id="demo">
+    <div class="cont">
+      <b>Prototipo navegable (Credenciales BD)</b>
+      <span>Acceso directo a las vistas de Arturo:</span>
+      <button type="button" onclick="entrarDirecto('asistente')">Entrar como asistente (Luna Reyes)</button>
+      <button type="button" onclick="entrarDirecto('medico1')">Entrar como médico (Dr. José Rodríguez)</button>
+      <button type="button" onclick="entrarDirecto('medico2')">Entrar como médica (Dra. Sofía Flores)</button>
+    </div>
+  </div>
 
-    </body>
+  <div class="login">
+    <div class="lp">
+      <div>
+        <a class="marca" href="./index.html" style="color:#fff">
+          <i style="background:#fff;color:var(--azul)">+</i>MedicDate
+        </a>
+        <h1>Atención las 24 horas, bien organizada.</h1>
+        <p>Acceso para el personal del Centro Médico Sagrado Corazón (Asistente y Médico).</p>
+        <ul>
+          <li>Agenda del día, de lunes a domingo</li>
+          <li>Pacientes y citas</li>
+          <li>Resumen y notas clínicas del médico</li>
+        </ul>
+      </div>
+      <span style="font-size:13px;color:#DCE9F7">© 2026 Centro Médico Sagrado Corazón · MedicDate</span>
+    </div>
+
+    <div class="lf">
+      <div class="lc">
+        <h2>Iniciar sesión</h2>
+        <p class="s">Escribe tu correo y contraseña de la base de datos.</p>
+        <div class="err" id="le" style="display:none"></div>
+
+        <form onsubmit="return iniciar(event)" novalidate>
+          <div class="campo">
+            <label for="u">Correo</label>
+            <input id="u" type="email" autocomplete="username" placeholder="nombre@medicdate.com">
+          </div>
+          <div class="campo ojo">
+            <label for="c">Contraseña</label>
+            <input id="c" type="password" autocomplete="current-password">
+            <button type="button" onclick="const i=document.getElementById('c');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'Mostrar':'Ocultar'">Mostrar</button>
+          </div>
+          <button class="btn btn-p" style="width:100%">Entrar</button>
+        </form>
+
+        <div class="demo-cred">
+          <b>Cuentas de base de datos (Contraseña: <code>Prueba123!</code>)</b>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+            <button type="button" class="btn btn-o btn-s" onclick="llenar('asistente')">Asistente (Luna)</button>
+            <button type="button" class="btn btn-o btn-s" onclick="llenar('medico1')">Dr. José Rodríguez</button>
+            <button type="button" class="btn btn-o btn-s" onclick="llenar('medico2')">Dra. Sofía Flores</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./service/api_config.js"></script>
+  <script>
+    function llenar(clave) {
+      const c = window.MedicDateApi.CUENTAS_BD[clave];
+      if (!c) return;
+      document.getElementById('u').value = c.correo;
+      document.getElementById('c').value = c.clave;
+      document.getElementById('le').style.display = 'none';
+    }
+
+    function entrarDirecto(clave) {
+      const c = window.MedicDateApi.activarCuentaDemo(clave);
+      if (!c) return;
+      window.location.href = c.rol === 'asistente'
+        ? './pages/private/asistente/agenda_general.html'
+        : './pages/private/doctor/resumen.html';
+    }
+
+    function iniciar(e) {
+      e.preventDefault();
+      const correo = document.getElementById('u').value.trim().toLowerCase();
+      const clave = document.getElementById('c').value;
+      const err = document.getElementById('le');
+      const mostrarError = (msg) => { err.textContent = msg; err.style.display = 'block'; return false; };
+
+      if (!correo) return mostrarError('Escribe tu correo.');
+      if (!clave) return mostrarError('Escribe tu contraseña.');
+
+      const cuentas = Object.entries(window.MedicDateApi.CUENTAS_BD);
+      const encontrada = cuentas.find(([, u]) => u.correo.toLowerCase() === correo && u.clave === clave);
+      if (!encontrada) {
+        return mostrarError('Correo o contraseña incorrectos. Usa las credenciales de la base de datos (Prueba123!).');
+      }
+
+      entrarDirecto(encontrada[0]);
+      return false;
+    }
+  </script>
+</body>
 </html>

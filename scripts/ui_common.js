@@ -1,5 +1,7 @@
 /**
  * Utilidades compartidas de interfaz para los paneles privados de MedicDate Web.
+ * Idéntico al flujo y diseño de MedicDate web _ Prototipo funcional con 3 perfiles.html
+ * con las credenciales reales de Credenciales_Prueba_MedicDate.md.
  */
 (function (global) {
   'use strict';
@@ -41,27 +43,20 @@
   }
 
   function badgeEstado(estado, etiqueta) {
-    const clave = String(estado || '').toLowerCase();
-    const clases = {
-      pendiente: 'b-ambar',
-      confirmada: 'b-azul',
-      en_progreso: 'b-azul',
-      completada: 'b-ok',
-      atendida: 'b-ok',
-      cancelada: 'b-rojo',
-      inasistencia: 'b-gris'
-    };
-    const etiquetas = {
-      pendiente: 'Pendiente',
-      confirmada: 'Confirmada',
-      en_progreso: 'En progreso',
-      completada: 'Atendida',
-      atendida: 'Atendida',
-      cancelada: 'Cancelada',
-      inasistencia: 'Inasistencia'
-    };
-    const cls = clases[clave] || 'b-gris';
-    const texto = etiqueta || etiquetas[clave] || clave || '—';
+    const clave = String(etiqueta || estado || '').toLowerCase();
+    let cls = 'b-azul';
+    let texto = 'Programada';
+
+    if (['completada', 'atendida'].includes(clave)) {
+      cls = 'b-ok';
+      texto = 'Atendida';
+    } else if (['cancelada', 'inasistencia'].includes(clave)) {
+      cls = 'b-rojo';
+      texto = 'Cancelada';
+    } else {
+      cls = 'b-azul';
+      texto = 'Programada';
+    }
     return `<span class="badge ${cls}">${esc(texto)}</span>`;
   }
 
@@ -75,7 +70,7 @@
     el.textContent = mensaje;
     el.classList.add('on');
     clearTimeout(el._timer);
-    el._timer = setTimeout(() => el.classList.remove('on'), 2800);
+    el._timer = setTimeout(() => el.classList.remove('on'), 2600);
   }
 
   async function cargarFragmento(rutaRelativa, contenedor, fallbackHtml) {
@@ -90,24 +85,22 @@
   }
 
   const FALLBACK_LATERAL_ASISTENTE = `
-    <aside class="lat" aria-label="Menú lateral del asistente">
-      <a class="marca" href="../../../index.html"><i>+</i><span>MedicDate</span></a>
-      <div class="tit">Asistente</div>
-      <a class="nav-item" data-nav="agenda" href="./agenda_general.html">Agenda general</a>
-      <a class="nav-item" data-nav="pacientes" href="./pacientes.html">Pacientes</a>
-      <div class="tit">Acceso rápido</div>
-      <a class="nav-item" href="../../../index.html">Portal público</a>
+    <aside class="lat">
+      <a class="marca" href="../../../index.html" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
+      <a data-nav="agenda" href="./agenda_general.html">Agenda general</a>
+      <a data-nav="pacientes" href="./pacientes.html">Pacientes</a>
+      <div class="tit">Cuenta</div>
+      <a data-nav="cuenta" href="#cuenta">Mi cuenta</a>
     </aside>`;
 
   const FALLBACK_LATERAL_DOCTOR = `
-    <aside class="lat" aria-label="Menú lateral del médico">
-      <a class="marca" href="../../../index.html"><i>+</i><span>MedicDate</span></a>
-      <div class="tit">Médico</div>
-      <a class="nav-item" data-nav="resumen" href="./resumen.html">Resumen</a>
-      <a class="nav-item" data-nav="agenda" href="./mi_agenda.html">Mi agenda</a>
-      <a class="nav-item" data-nav="pacientes" href="./mis_pasientes.html">Mis pacientes</a>
-      <div class="tit">Acceso rápido</div>
-      <a class="nav-item" href="../../../index.html">Portal público</a>
+    <aside class="lat">
+      <a class="marca" href="../../../index.html" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
+      <a data-nav="resumen" href="./resumen.html">Resumen</a>
+      <a data-nav="agenda" href="./mi_agenda.html">Mi agenda</a>
+      <a data-nav="pacientes" href="./mis_pasientes.html">Mis pacientes</a>
+      <div class="tit">Cuenta</div>
+      <a data-nav="cuenta" href="#cuenta">Mi cuenta</a>
     </aside>`;
 
   const FALLBACK_MODAL_CITA = `
@@ -115,30 +108,25 @@
       <div class="mc">
         <h3 id="modalCitaTitulo">Detalle de la cita</h3>
         <div class="kv" id="modalCitaDatos">
-          <b>Fecha y hora</b><span id="mcFechaHora">—</span>
+          <b>Fecha</b><span id="mcFechaHora">—</span>
           <b>Paciente</b><span id="mcPaciente">—</span>
           <b>Teléfono</b><span id="mcTelefono">—</span>
           <b class="solo-asistente">Médico</b><span class="solo-asistente" id="mcMedico">—</span>
           <b class="solo-asistente">Especialidad</b><span class="solo-asistente" id="mcEspecialidad">—</span>
-          <b>Tipo de atención</b><span id="mcTipoAtencion">—</span>
-          <b>Consultorio</b><span id="mcConsultorio">—</span>
           <b>Motivo</b><span id="mcMotivo">—</span>
           <b>Estado</b><span id="mcEstado">—</span>
         </div>
         <div id="mcSeccionDoctor" class="oculto">
-          <div id="mcAlergiasWrap" class="caja-alergias oculto">
-            <strong>Alergias registradas:</strong> <span id="mcAlergias"></span>
+          <div class="campo" style="margin-top:16px">
+            <label for="mcNotas">Notas de la consulta (solo las ves tú)</label>
+            <textarea id="mcNotas" placeholder="Escribe aquí tus notas…"></textarea>
           </div>
-          <div class="campo" style="margin-top: 16px;">
-            <label for="mcNotas">Notas internas de la consulta (solo las ves tú)</label>
-            <textarea id="mcNotas" placeholder="Escribe aquí tus notas clínicas de esta consulta..."></textarea>
-          </div>
-          <p id="mcAvisoFecha" class="oculto" style="margin: 0 0 12px; font-size: 14px; color: var(--suave);">
-            Podrás marcar esta cita como atendida a partir de la fecha programada.
+          <p id="mcAvisoFecha" class="oculto" style="margin:0 0 12px;font-size:14px;color:var(--suave)">
+            Podrás marcarla como atendida desde el día de la cita.
           </p>
         </div>
         <div class="pie">
-          <button type="button" class="btn btn-o" id="btnCerrarModalCita">Cerrar</button>
+          <button type="button" class="btn btn-p" id="btnCerrarModalCita">Cerrar</button>
           <button type="button" class="btn btn-o oculto" id="btnGuardarNotas">Guardar notas</button>
           <button type="button" class="btn btn-p oculto" id="btnMarcarAtendida">Marcar como atendida</button>
         </div>
@@ -148,26 +136,9 @@
   const FALLBACK_MODAL_PACIENTE = `
     <div class="modal-backdrop" id="modalPaciente" role="dialog" aria-modal="true" aria-labelledby="modalPacienteTitulo">
       <div class="mc">
-        <h3 id="modalPacienteTitulo">Ficha del paciente</h3>
-        <div class="kv">
-          <b>Edad</b><span id="mpEdad">—</span>
-          <b>Teléfono</b><span id="mpTelefono">—</span>
-          <b>Correo</b><span id="mpCorreo">—</span>
-        </div>
-        <div id="mpSeccionDoctor" class="oculto" style="margin-top: 16px;">
-          <div class="campo">
-            <label for="mpAlergias">Alergias</label>
-            <input id="mpAlergias" type="text" placeholder="Ej. Penicilina, polen (o Ninguna)">
-          </div>
-          <div class="campo">
-            <label for="mpNotasMedicas">Notas médicas generales</label>
-            <textarea id="mpNotasMedicas" placeholder="Antecedentes relevantes o notas generales del paciente..."></textarea>
-          </div>
-          <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
-            <button type="button" class="btn btn-o btn-s" id="btnGuardarExpedientePaciente">Guardar alergias y notas</button>
-          </div>
-        </div>
-        <h4 id="mpTituloHistorial" style="margin: 20px 0 10px;">Citas</h4>
+        <h3 id="modalPacienteTitulo">Paciente</h3>
+        <div class="kv" id="mpDatosKv"></div>
+        <h4 id="mpTituloHistorial" style="margin:20px 0 8px">Citas</h4>
         <div id="mpListaCitas"></div>
         <div class="pie">
           <button type="button" class="btn btn-p" id="btnCerrarModalPaciente">Cerrar</button>
@@ -175,7 +146,84 @@
       </div>
     </div>`;
 
+  function inyectarBarraDemo(sesionActual) {
+    if (document.getElementById('demo')) return;
+    const barra = document.createElement('div');
+    barra.id = 'demo';
+    barra.innerHTML = `
+      <div class="cont">
+        <b>Cuentas BD (Prueba123!)</b>
+        <span>Selecciona un perfil de la base de datos:</span>
+        <button type="button" data-demo-cuenta="asistente">Asistente: Luna Aurora Reyes</button>
+        <button type="button" data-demo-cuenta="medico1">Médico 1: Dr. José Rodríguez</button>
+        <button type="button" data-demo-cuenta="medico2">Médica 2: Dra. Sofía Flores</button>
+        <button type="button" id="btnRestablecerDatosDemo">Restablecer datos</button>
+      </div>
+    `;
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    barra.querySelectorAll('[data-demo-cuenta]').forEach((btn) => {
+      const clave = btn.dataset.demoCuenta;
+      const cuenta = global.MedicDateApi.CUENTAS_BD[clave];
+      if (sesionActual && cuenta && Number(sesionActual.id_usuario) === Number(cuenta.id_usuario)) {
+        btn.classList.add('on');
+      }
+      btn.addEventListener('click', () => {
+        const nueva = global.MedicDateApi.activarCuentaDemo(clave);
+        if (!nueva) return;
+        const enCarpetaAsistente = global.location.pathname.includes('/asistente/');
+        if (nueva.rol === 'asistente') {
+          global.location.href = enCarpetaAsistente ? './agenda_general.html' : '../asistente/agenda_general.html';
+        } else {
+          global.location.href = enCarpetaAsistente ? '../doctor/resumen.html' : './resumen.html';
+        }
+      });
+    });
+
+    const btnReset = document.getElementById('btnRestablecerDatosDemo');
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        global.MedicDateApi.restablecerBDLocal();
+        toast('Datos restablecidos.');
+        setTimeout(() => global.location.reload(), 350);
+      });
+    }
+  }
+
+  function abrirModalMiCuenta(sesion) {
+    let modal = document.getElementById('modalMiCuenta');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'modalMiCuenta';
+      modal.className = 'modal-backdrop';
+      document.body.appendChild(modal);
+      modal.addEventListener('mousedown', (e) => {
+        if (e.target === modal) modal.classList.remove('on');
+      });
+    }
+
+    const rolTexto = sesion.rol === 'medico' ? 'Médico' : 'Asistente';
+    modal.innerHTML = `
+      <div class="mc">
+        <h3>Mi cuenta</h3>
+        <div class="kv" style="margin-bottom:16px">
+          <b>Nombre</b><span>${esc(sesion.nombre)}</span>
+          <b>Correo</b><span>${esc(sesion.correo)}</span>
+          <b>Perfil</b><span>${esc(rolTexto)}</span>
+          <b>Pregunta secreta</b><span>${esc(sesion.pregunta || '¿Cuál es el nombre de tu primera mascota?')}</span>
+        </div>
+        <div class="pie">
+          <button type="button" class="btn btn-p" onclick="document.getElementById('modalMiCuenta').classList.remove('on')">Cerrar</button>
+        </div>
+      </div>
+    `;
+    modal.classList.add('on');
+  }
+
   async function inicializarLayoutPrivado({ rol, navActivo }) {
+    const sesion = global.MedicDateApi.obtenerSesion(rol);
+    inyectarBarraDemo(sesion);
+
     const slotLateral = document.getElementById('slotLateral');
     const esDoctor = rol === 'medico';
     const rutaLateral = esDoctor
@@ -193,7 +241,16 @@
       if (enlaceActivo) enlaceActivo.classList.add('on');
     }
 
-    const sesion = global.MedicDateApi.obtenerSesion(rol);
+    if (slotLateral) {
+      const linkCuenta = slotLateral.querySelector('[data-nav="cuenta"]');
+      if (linkCuenta) {
+        linkCuenta.addEventListener('click', (e) => {
+          e.preventDefault();
+          abrirModalMiCuenta(sesion);
+        });
+      }
+    }
+
     const etiquetaRol = esDoctor ? 'Médico' : 'Asistente';
     const av = document.getElementById('topbarAvatar');
     const nom = document.getElementById('topbarUsuario');

@@ -3,66 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MedicDate | Agenda general (Asistente)</title>
+  <title>MedicDate | Agenda general</title>
   <link rel="stylesheet" href="../../../styles/panel_privado.css">
 </head>
 <body>
   <div class="priv">
     <div id="slotLateral"></div>
 
-    <main class="pc">
-      <header class="bar">
+    <div class="pc">
+      <div class="bar">
         <h1>Agenda general</h1>
         <div class="u">
-          <span class="av" id="topbarAvatar">AS</span>
-          <span id="topbarUsuario">Asistente</span>
+          <span class="av" id="topbarAvatar">LR</span>
+          <span id="topbarUsuario">Luna Aurora Reyes Morales · Asistente</span>
           <a class="btn btn-o btn-s" href="../../../index.html">Ver portal</a>
           <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
         </div>
-      </header>
+      </div>
 
-      <div id="alertaError" class="aviso-alerta oculto" role="alert"></div>
-
-      <section class="resu" aria-label="Resumen general">
+      <div class="resu">
         <div class="card"><b id="kpiCitasHoy">0</b><span>Citas de hoy</span></div>
         <div class="card"><b id="kpiProgramadas">0</b><span>Programadas</span></div>
         <div class="card"><b id="kpiPacientes">0</b><span>Pacientes</span></div>
         <div class="card"><b id="kpiMedicos">0</b><span>Médicos</span></div>
-      </section>
+      </div>
 
-      <section class="panel">
-        <div class="aviso-lectura">
-          <span>Las citas las reservan los pacientes desde la app móvil. Desde aquí puedes consultarlas (solo lectura).</span>
-          <span class="badge b-gris">Solo lectura</span>
-        </div>
+      <div class="panel">
+        <p style="margin:0 0 14px;color:var(--suave)">Las citas las reservan los pacientes desde la app móvil. Aquí puedes consultarlas.</p>
 
         <div class="filt">
           <div class="campo">
             <label for="filtroFecha">Día</label>
             <input id="filtroFecha" type="date">
           </div>
-
           <div class="campo">
             <label for="filtroMedico">Médico</label>
             <select id="filtroMedico">
               <option value="">Todos</option>
             </select>
           </div>
-
           <div class="campo">
             <label for="filtroEstado">Estado</label>
             <select id="filtroEstado">
               <option value="">Todos</option>
-              <option value="programada">Programadas (activas)</option>
-              <option value="pendiente">Pendiente</option>
-              <option value="confirmada">Confirmada</option>
-              <option value="en_progreso">En progreso</option>
-              <option value="completada">Atendida</option>
-              <option value="cancelada">Cancelada</option>
-              <option value="inasistencia">Inasistencia</option>
+              <option value="Programada">Programada</option>
+              <option value="Atendida">Atendida</option>
+              <option value="Cancelada">Cancelada</option>
             </select>
           </div>
-
           <button type="button" class="btn btn-o btn-s" id="btnLimpiarFiltros">Limpiar</button>
         </div>
 
@@ -81,14 +69,14 @@
             </thead>
             <tbody id="tbodyCitas"></tbody>
           </table>
-          <div id="estadoVacio" class="vacio">Cargando agenda...</div>
+          <div id="estadoVacio" class="vacio oculto">No hay citas con esos filtros.</div>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   </div>
 
   <div id="slotModalCita"></div>
-  <div id="toast" aria-live="polite"></div>
+  <div id="toast"></div>
 
   <script src="../../../service/api_config.js"></script>
   <script src="../../../service/asistente_service.js"></script>

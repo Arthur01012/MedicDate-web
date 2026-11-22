@@ -3,38 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MedicDate | Pacientes (Asistente)</title>
+  <title>MedicDate | Pacientes</title>
   <link rel="stylesheet" href="../../../styles/panel_privado.css">
 </head>
 <body>
   <div class="priv">
     <div id="slotLateral"></div>
 
-    <main class="pc">
-      <header class="bar">
+    <div class="pc">
+      <div class="bar">
         <h1>Pacientes</h1>
         <div class="u">
-          <span class="av" id="topbarAvatar">AS</span>
-          <span id="topbarUsuario">Asistente</span>
+          <span class="av" id="topbarAvatar">LR</span>
+          <span id="topbarUsuario">Luna Aurora Reyes Morales · Asistente</span>
           <a class="btn btn-o btn-s" href="../../../index.html">Ver portal</a>
           <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
         </div>
-      </header>
+      </div>
 
-      <div id="alertaError" class="aviso-alerta oculto" role="alert"></div>
-
-      <section class="panel">
-        <div class="aviso-lectura">
-          <span>Consulta el directorio de pacientes y su historial de citas (solo lectura).</span>
-          <span class="badge b-gris">Solo lectura</span>
-        </div>
-
+      <div class="panel">
         <div class="filt">
-          <div class="campo" style="min-width: 280px; flex: 1; max-width: 420px;">
+          <div class="campo" style="min-width:280px">
             <label for="inputBuscarPaciente">Buscar</label>
-            <input id="inputBuscarPaciente" type="search" placeholder="Nombre, correo o teléfono">
+            <input id="inputBuscarPaciente" placeholder="Nombre o correo">
           </div>
-          <button type="button" class="btn btn-o btn-s" id="btnLimpiarBusqueda">Limpiar</button>
         </div>
 
         <div class="tw">
@@ -50,14 +42,14 @@
             </thead>
             <tbody id="tbodyPacientes"></tbody>
           </table>
-          <div id="estadoVacio" class="vacio">Cargando pacientes...</div>
+          <div id="estadoVacio" class="vacio oculto">No se encontraron pacientes.</div>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   </div>
 
   <div id="slotModalPaciente"></div>
-  <div id="toast" aria-live="polite"></div>
+  <div id="toast"></div>
 
   <script src="../../../service/api_config.js"></script>
   <script src="../../../service/asistente_service.js"></script>

@@ -37,29 +37,14 @@
     `).join('');
   }
 
-  async function cargarPacientes(busqueda = '') {
-    const tbody = document.getElementById('tbodyPacientes');
-    const vacio = document.getElementById('estadoVacio');
-    const alerta = document.getElementById('alertaError');
-
-    alerta.classList.add('oculto');
-    vacio.textContent = 'Cargando pacientes...';
-    vacio.classList.remove('oculto');
-    tbody.innerHTML = '';
-
-    try {
-      const data = await Service.obtenerPacientesAsistente(busqueda);
-      if (data.usuario && data.usuario.nombre) {
-        document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
-        document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
-      }
-      todosLosPacientes = data.pacientes || [];
-      renderTabla(todosLosPacientes);
-    } catch (error) {
-      vacio.textContent = 'No se pudo cargar la lista de pacientes.';
-      alerta.textContent = error.message || 'Error al consultar la API de pacientes.';
-      alerta.classList.remove('oculto');
+  async function cargarPacientes() {
+    const data = await Service.obtenerPacientesAsistente('');
+    if (data.usuario && data.usuario.nombre) {
+      document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
+      document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
     }
+    todosLosPacientes = data.pacientes || [];
+    renderTabla(todosLosPacientes);
   }
 
   async function abrirFichaPaciente(idPaciente) {
@@ -69,40 +54,30 @@
       const citas = data.citas || [];
       if (!p) return;
 
-      document.getElementById('modalPacienteTitulo').textContent = p.nombre || 'Ficha del paciente';
-      document.getElementById('mpEdad').textContent = p.edad !== null && p.edad !== undefined ? `${p.edad} años` : '—';
-      document.getElementById('mpTelefono').textContent = p.telefono || '—';
-      document.getElementById('mpCorreo').textContent = p.correo || '—';
-
-      // Asistente: ocultar sección médica (alergias/notas)
-      document.getElementById('mpSeccionDoctor').classList.add('oculto');
-      document.getElementById('mpTituloHistorial').textContent = 'Citas registradas';
+      document.getElementById('modalPacienteTitulo').textContent = p.nombre || 'Paciente';
+      document.getElementById('mpDatosKv').innerHTML = `
+        <b>Correo</b><span>${UI.esc(p.correo || '—')}</span>
+        <b>Teléfono</b><span>${UI.esc(p.telefono || '—')}</span>
+        <b>Edad</b><span>${p.edad !== null && p.edad !== undefined ? `${p.edad} años` : '—'}</span>
+      `;
+      document.getElementById('mpTituloHistorial').textContent = 'Citas';
 
       const lista = document.getElementById('mpListaCitas');
       if (citas.length === 0) {
-        lista.innerHTML = '<p class="vacio" style="padding: 12px 0;">Sin citas registradas.</p>';
+        lista.innerHTML = '<p class="vacio" style="padding:8px 0">Sin citas.</p>';
       } else {
         lista.innerHTML = `
-          <div class="tw">
-            <table>
-              <thead>
+          <table>
+            <tbody>
+              ${citas.map((c) => `
                 <tr>
-                  <th>Fecha y hora</th>
-                  <th>Médico</th>
-                  <th>Estado</th>
+                  <td>${UI.fechaCorta(c.fecha)} ${UI.esc(c.hora)}</td>
+                  <td>${UI.esc(c.medico)}</td>
+                  <td>${UI.badgeEstado(c.estado, c.estado_etiqueta)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                ${citas.map((c) => `
-                  <tr>
-                    <td>${UI.fechaCorta(c.fecha)} ${UI.esc(c.hora)}</td>
-                    <td>${UI.esc(c.medico)}</td>
-                    <td>${UI.badgeEstado(c.estado, c.estado_etiqueta)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
+              `).join('')}
+            </tbody>
+          </table>
         `;
       }
 
@@ -117,17 +92,9 @@
     modalPacienteCtrl = await UI.cargarModalPaciente();
 
     const inpBuscar = document.getElementById('inputBuscarPaciente');
-    const btnLimpiar = document.getElementById('btnLimpiarBusqueda');
-
     inpBuscar.addEventListener('input', () => {
       const filtrados = Filtros.buscarPaciente(todosLosPacientes, inpBuscar.value);
       renderTabla(filtrados);
-    });
-
-    btnLimpiar.addEventListener('click', () => {
-      inpBuscar.value = '';
-      renderTabla(todosLosPacientes);
-      inpBuscar.focus();
     });
 
     document.getElementById('tbodyPacientes').addEventListener('click', (e) => {
