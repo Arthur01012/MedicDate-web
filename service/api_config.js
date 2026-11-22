@@ -143,7 +143,7 @@
     } catch (_) {
       // Ignorar
     }
-    global.location.href = '../../../index.html';
+    global.location.href = '../../../login.html';
   }
 
   function construirQuery(params) {
