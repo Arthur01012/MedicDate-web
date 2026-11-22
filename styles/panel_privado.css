@@ -320,6 +320,12 @@ button {
   min-height: calc(100vh - 38px);
 }
 
+#slotLateral {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
 aside.lat {
   background: var(--sup);
   border-right: 1px solid var(--linea);
@@ -327,6 +333,8 @@ aside.lat {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
+  min-height: 100%;
 }
 
 aside.lat .marca {
