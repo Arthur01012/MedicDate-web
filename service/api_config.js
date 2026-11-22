@@ -8,59 +8,7 @@
 
   const DEFAULT_API_BASE = 'https://medicdate.innego.net/web/apis/medicdate';
 
-  /**
-   * Cuentas reales registradas en innegone_bd_medicdate (Credenciales_Prueba_MedicDate.md)
-   * Contraseña universal: Prueba123!
-   */
-  const CUENTAS_BD = {
-    admin: {
-      id_usuario: 1,
-      id_persona: 1,
-      id_empleado: 1,
-      nombre: 'Lic. Carlos Vega Mendoza',
-      correo: 'carlos.vega.admin@medicdate.com',
-      clave: 'Prueba123!',
-      rol: 'administrador',
-      telefono: '7711000001',
-      pregunta: '¿Cuál es el nombre de tu primera mascota?'
-    },
-    asistente: {
-      id_usuario: 4,
-      id_persona: 4,
-      id_empleado: 4,
-      nombre: 'Luna Aurora Reyes Morales',
-      correo: 'luna.reyes.asistente@example.test',
-      clave: 'Prueba123!',
-      rol: 'asistente',
-      telefono: '5550000003',
-      turno: 'Matutino',
-      pregunta: '¿Cuál es el nombre de tu primera mascota?'
-    },
-    medico1: {
-      id_usuario: 2,
-      id_persona: 2,
-      id_empleado: 2,
-      nombre: 'Dr. José Manuel Rodríguez López',
-      correo: 'jose.rodriguez.doc@example.test',
-      clave: 'Prueba123!',
-      rol: 'medico',
-      telefono: '5550000001',
-      cedula_profesional: 'MED-100201',
-      pregunta: '¿Cuál es el nombre de tu primera mascota?'
-    },
-    medico2: {
-      id_usuario: 3,
-      id_persona: 3,
-      id_empleado: 3,
-      nombre: 'Dra. Sofía Flores Reyes',
-      correo: 'sofia.flores.doc@medicdate.com',
-      clave: 'Prueba123!',
-      rol: 'medico',
-      telefono: '5550000002',
-      cedula_profesional: 'PED-200301',
-      pregunta: '¿Cuál es el nombre de tu primera mascota?'
-    }
-  };
+  
 
   function obtenerApiBase() {
     if (global.MEDICDATE_API_BASE) {
