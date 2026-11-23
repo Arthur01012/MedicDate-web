@@ -1,13 +1,3 @@
-/* =====================================================
-   MedicDate – estilos (Material Design 3)
-   Reglas aplicadas:
-   - Colores por rol: primary, primary-container, surface, outline
-   - Superficies con tinte azul (nada de blanco puro) para cansar menos la vista
-   - Elevación con sombras suaves (niveles 1, 2 y 3)
-   - Formas: botones tipo píldora, tarjetas de 16 a 28 px, campos de 8 px
-   - Cuadrícula de 8 px y áreas táctiles de 48 px
-   - Estados al pasar el mouse o enfocar (capa del 8 % y 12 %)
-   ===================================================== */
 :root {
   /* Color principal */
   --azul: #0B5FA5;
@@ -389,6 +379,30 @@ header {
 
 .boton-ojo:hover {
   background: rgba(11, 95, 165, .08);
+}
+
+.pasos-progreso {
+  display: flex;
+  gap: 6px;
+}
+
+.pasos-progreso span {
+  flex: 1;
+  height: 6px;
+  border-radius: 100px;
+  background: var(--linea);
+}
+
+.pasos-progreso span.activo {
+  background: var(--azul);
+}
+
+.pregunta-secreta {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--azul-claro);
+  color: var(--sobre-azul-claro);
+  font-weight: 500;
 }
 
 /* ===== Cuentas de pacientes (parte privada) ===== */

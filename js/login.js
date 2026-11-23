@@ -1,14 +1,13 @@
-// Acceso del personal
-// Por ahora las cuentas son de ejemplo; despues se cambian por la consulta a la API.
-const usuarios = [
-    { correo: "elena.cruz@centromedico.com", clave: "Asistente123*", nombre: "Elena Cruz", rol: "asistente", activa: true, destino: "hero-imagenes.html" },
-    { correo: "jose.rodriguez@centromedico.com", clave: "Medico123*", nombre: "José Rodríguez", rol: "medico", activa: true, destino: "mi-agenda.html" }
-];
+
+const DESTINO_POR_ROL = {
+    administrador: "pages/private/admin/panel.html",
+    asistente: "pages/private/asistente/agenda_general.html",
+    medico: "pages/private/doctor/resumen.html"
+};
 
 const formLogin = document.getElementById("formLogin");
 const txtCorreo = document.getElementById("usuario");
 const txtClave = document.getElementById("clave");
-const chkRecordar = document.getElementById("recordar");
 const botonOjo = document.getElementById("botonOjo");
 const mensajeError = document.getElementById("mensajeError");
 
@@ -18,7 +17,7 @@ function mostrarError(titulo, detalle) {
     mensajeError.classList.remove("d-none");
 }
 
-function iniciarSesion(evento) {
+async function iniciarSesion(evento) {
     evento.preventDefault();
     const correo = txtCorreo.value.trim().toLowerCase();
     const clave = txtClave.value;
@@ -28,16 +27,20 @@ function iniciarSesion(evento) {
         return;
     }
 
-    const usuario = usuarios.find(u => u.correo === correo && u.clave === clave && u.activa);
-    if (!usuario) {
-        mostrarError("Correo o contraseña incorrectos.", "Revisa los datos e inténtalo de nuevo. Si tu cuenta está desactivada, contacta al administrador.");
-        return;
-    }
+    try {
+        const respuesta = await AuthService.iniciarSesion(correo, clave);
+        const usuario = respuesta.usuario;
 
-    // Guardamos solo lo necesario; con "Mantener sesión" se queda aunque se cierre el navegador
-    const almacen = chkRecordar.checked ? localStorage : sessionStorage;
-    almacen.setItem("usuario", JSON.stringify({ nombre: usuario.nombre, rol: usuario.rol }));
-    window.location.href = usuario.destino;
+        // Guardamos lo que devuelve la API (id_usuario, id_empleado, nombre, correo, rol)
+        sessionStorage.setItem("usuario", JSON.stringify(usuario));
+        window.location.href = DESTINO_POR_ROL[usuario.rol];
+    } catch (error) {
+        if (error.datos) {
+            mostrarError(error.datos.mensaje || "No se pudo iniciar sesión.", "");
+        } else {
+            mostrarError("No se pudo iniciar sesión.", "Revisa tu conexión e inténtalo de nuevo.");
+        }
+    }
 }
 
 function verOcultarClave() {

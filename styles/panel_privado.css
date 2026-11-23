@@ -1,7 +1,3 @@
-/* =====================================================================
-   MedicDate Web — Estilos del Panel Privado (Asistente y Médico)
-   Idéntico a MedicDate web _ Prototipo funcional con 3 perfiles.html
-   ===================================================================== */
 :root {
   --azul: #0B5FA5;
   --azul-osc: #084a82;
@@ -508,6 +504,73 @@ tbody tr:hover {
   text-align: center;
   color: var(--suave);
   padding: 32px 0;
+}
+
+/* listas de barras (paneles de resumen) */
+.lista-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lista-barras .fila {
+  display: grid;
+  grid-template-columns: 1fr 2fr 32px;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.lista-barras .pista {
+  height: 8px;
+  border-radius: 100px;
+  background: var(--alta);
+  overflow: hidden;
+}
+
+.lista-barras .relleno {
+  height: 100%;
+  border-radius: 100px;
+  background: var(--azul);
+}
+
+.lista-barras .relleno.ok {
+  background: var(--verde);
+}
+
+.lista-barras .relleno.rojo {
+  background: var(--rojo);
+}
+
+.lista-barras .valor {
+  text-align: right;
+  font-weight: 700;
+  color: var(--texto);
+}
+
+/* accesos rápidos */
+.accesos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.accesos a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--campo);
+  border: 1px solid var(--linea);
+  color: var(--texto);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.accesos a:hover {
+  background: var(--azul-claro);
+  border-color: var(--azul-claro);
 }
 
 @media (max-width: 860px) {
