@@ -1,26 +1,10 @@
 <?php
-$archivoConexion = __DIR__ . '/../web/apis/medicdate/config/conexion.php';
+require __DIR__ . '/../web/apis/medicdate/config/conexion.php';
 
-$slides = [];
-// Las imágenes se piden desde la carpeta del sitio, sin importar dónde esté publicado
-$baseSitio = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/';
-if (file_exists($archivoConexion)) {
-    require $archivoConexion;
-    try {
-        $conexion = conectarBD();
-        $resultado = $conexion->query(
-            "SELECT titulo, texto, boton_texto, enlace, imagen_ruta, color_fondo
-            FROM hero_slide
-            WHERE activo = 1
-            ORDER BY orden ASC"
-        );
-        $slides = $resultado->fetch_all(MYSQLI_ASSOC);
-        $conexion->close();
-    } catch (Throwable $e) {
-        // Si falla la conexión, el carrusel simplemente no muestra diapositivas
-        $slides = [];
-    }
-}
+$conexion = conectarBD();
+$resultado = $conexion->query("SELECT titulo, texto, boton_texto, enlace, imagen_ruta, color_fondo FROM hero_slide WHERE activo = 1 ORDER BY orden ASC");
+$slides = $resultado->fetch_all(MYSQLI_ASSOC);
+$conexion->close();
 
 $title  = 'MedicDate | Centro Médico Sagrado Corazón';
 $pagina = 'inicio';
@@ -46,7 +30,7 @@ require __DIR__ . '/includes/header.php';
                 <div class="carousel-inner">
                     <?php foreach ($slides as $i => $slide): ?>
                         <div class="carousel-item hero-slide<?= $i === 0 ? ' active' : '' ?>"
-                             style="--imagen: url('<?= htmlspecialchars($baseSitio . $slide['imagen_ruta']) ?>'); background-color: <?= htmlspecialchars($slide['color_fondo'] ?: '#0B4A82') ?>">
+                            style="--imagen: url('<?= htmlspecialchars($baseSitio . $slide['imagen_ruta']) ?>'); background-color: <?= htmlspecialchars($slide['color_fondo'] ?: '#0B4A82') ?>">
                             <div class="contenedor">
                                 <div class="hero-contenido d-flex flex-column gap-3">
                                     <?php if ($i === 0): ?>
