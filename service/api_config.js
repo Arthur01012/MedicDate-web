@@ -171,11 +171,14 @@
 
   function construirQuery(params) {
     const qs = new URLSearchParams();
-    Object.entries(params || {}).forEach(([clave, valor]) => {
+    const entradas = Object.entries(params || {});
+    for (let i = 0; i < entradas.length; i++) {
+      const clave = entradas[i][0];
+      const valor = entradas[i][1];
       if (valor !== null && valor !== undefined && String(valor).trim() !== '') {
         qs.set(clave, String(valor).trim());
       }
-    });
+    }
     const texto = qs.toString();
     return texto ? '?' + texto : '';
   }

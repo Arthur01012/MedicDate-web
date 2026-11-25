@@ -2,29 +2,38 @@
  * Utilidades compartidas de interfaz para los paneles privados de MedicDate Web.
  * Conectado directamente a https://medicdate.innego.net/web/apis/medicdate
  */
-(function (global) {
+(function inicializarUiCommon(global) {
   'use strict';
 
   const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
   const DIAS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  const ENTIDADES_HTML = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;'
+  };
+
+  function reemplazarCaracterHtml(ch) {
+    return ENTIDADES_HTML[ch];
+  }
 
   function esc(valor) {
-    return String(valor ?? '').replace(/[&<>"]/g, (ch) => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;'
-    }[ch]));
+    return String(valor ?? '').replace(/[&<>"]/g, reemplazarCaracterHtml);
   }
 
   function iniciales(nombre) {
-    return String(nombre || 'U')
+    const partes = String(nombre || 'U')
       .replace(/^(Dra?\.|Lic\.)\s*/i, '')
       .trim()
       .split(/\s+/)
-      .slice(0, 2)
-      .map((p) => (p[0] || '').toUpperCase())
-      .join('') || 'U';
+      .slice(0, 2);
+
+    let resultado = '';
+    for (let i = 0; i < partes.length; i++) {
+      resultado += (partes[i][0] || '').toUpperCase();
+    }
+    return resultado || 'U';
   }
 
   function fechaCorta(iso) {
@@ -59,6 +68,13 @@
     return `<span class="badge ${cls}">${esc(texto)}</span>`;
   }
 
+  function ocultarToastActivo() {
+    const el = document.getElementById('toast');
+    if (el) {
+      el.classList.remove('on');
+    }
+  }
+
   function toast(mensaje) {
     let el = document.getElementById('toast');
     if (!el) {
@@ -69,7 +85,7 @@
     el.textContent = mensaje;
     el.classList.add('on');
     clearTimeout(el._timer);
-    el._timer = setTimeout(() => el.classList.remove('on'), 2600);
+    el._timer = setTimeout(ocultarToastActivo, 2600);
   }
 
   async function cargarFragmento(rutaRelativa, contenedor, fallbackHtml) {
@@ -145,6 +161,16 @@
       </div>
     </div>`;
 
+  function cerrarModalAlHacerClickFondo(e) {
+    if (e.target === this) {
+      this.classList.remove('on');
+    }
+  }
+
+  function manejarCerrarSesion() {
+    global.MedicDateApi.cerrarSesion();
+  }
+
   function abrirModalMiCuenta(sesion, rol) {
     let modal = document.getElementById('modalMiCuenta');
     if (!modal) {
@@ -152,14 +178,12 @@
       modal.id = 'modalMiCuenta';
       modal.className = 'modal-backdrop';
       document.body.appendChild(modal);
-      modal.addEventListener('mousedown', (e) => {
-        if (e.target === modal) modal.classList.remove('on');
-      });
+      modal.addEventListener('mousedown', cerrarModalAlHacerClickFondo);
     }
 
     const perfilApi = global.MedicDateApi.obtenerPerfilCargado() || {};
-    const nombre = perfilApi.nombre || sesion?.nombre || 'Usuario';
-    const idUsuario = perfilApi.id_usuario || sesion?.id_usuario || '—';
+    const nombre = perfilApi.nombre || (sesion && sesion.nombre) || 'Usuario';
+    const idUsuario = perfilApi.id_usuario || (sesion && sesion.id_usuario) || '—';
     const rolTexto = rol === 'medico' ? 'Médico' : 'Asistente';
 
     modal.innerHTML = `
@@ -207,10 +231,11 @@
     if (slotLateral) {
       const linkCuenta = slotLateral.querySelector('[data-nav="cuenta"]');
       if (linkCuenta) {
-        linkCuenta.addEventListener('click', (e) => {
+        function manejarClickMiCuenta(e) {
           e.preventDefault();
           abrirModalMiCuenta(sesion, rol);
-        });
+        }
+        linkCuenta.addEventListener('click', manejarClickMiCuenta);
       }
     }
 
@@ -224,7 +249,7 @@
 
     const btnSalir = document.getElementById('btnCerrarSesion');
     if (btnSalir) {
-      btnSalir.addEventListener('click', () => global.MedicDateApi.cerrarSesion());
+      btnSalir.addEventListener('click', manejarCerrarSesion);
     }
 
     return sesion;
@@ -236,14 +261,14 @@
 
     const backdrop = document.getElementById('modalCita');
     const btnCerrar = document.getElementById('btnCerrarModalCita');
-    const cerrar = () => backdrop && backdrop.classList.remove('on');
+
+    function cerrar() {
+      if (backdrop) backdrop.classList.remove('on');
+    }
 
     if (btnCerrar) btnCerrar.addEventListener('click', cerrar);
-    if (backdrop) {
-      backdrop.addEventListener('mousedown', (e) => {
-        if (e.target === backdrop) cerrar();
-      });
-    }
+    if (backdrop) backdrop.addEventListener('mousedown', cerrarModalAlHacerClickFondo);
+
     return { backdrop, cerrar };
   }
 
@@ -253,14 +278,14 @@
 
     const backdrop = document.getElementById('modalPaciente');
     const btnCerrar = document.getElementById('btnCerrarModalPaciente');
-    const cerrar = () => backdrop && backdrop.classList.remove('on');
+
+    function cerrar() {
+      if (backdrop) backdrop.classList.remove('on');
+    }
 
     if (btnCerrar) btnCerrar.addEventListener('click', cerrar);
-    if (backdrop) {
-      backdrop.addEventListener('mousedown', (e) => {
-        if (e.target === backdrop) cerrar();
-      });
-    }
+    if (backdrop) backdrop.addEventListener('mousedown', cerrarModalAlHacerClickFondo);
+
     return { backdrop, cerrar };
   }
 

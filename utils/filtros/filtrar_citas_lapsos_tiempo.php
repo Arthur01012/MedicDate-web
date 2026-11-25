@@ -19,21 +19,33 @@ function filtrarCitasPorLapso(array $citas, string $lapso = 'hoy', ?string $fech
     $finSemanaIso = $hoy->modify('+6 days')->format('Y-m-d');
     $mesActual = $hoy->format('Y-m');
 
-    return array_values(array_filter($citas, static function (array $cita) use ($lapso, $fechaExacta, $hoyIso, $finSemanaIso, $mesActual): bool {
+    $resultado = [];
+    $lapsoNormalizado = strtolower($lapso);
+
+    foreach ($citas as $cita) {
         $fechaCita = (string) ($cita['fecha'] ?? '');
         if ($fechaCita === '') {
-            return false;
+            continue;
         }
 
         if ($fechaExacta !== null && $fechaExacta !== '') {
-            return $fechaCita === $fechaExacta;
+            if ($fechaCita === $fechaExacta) {
+                $resultado[] = $cita;
+            }
+            continue;
         }
 
-        return match (strtolower($lapso)) {
+        $coincide = match ($lapsoNormalizado) {
             'hoy' => $fechaCita === $hoyIso,
             'semana' => $fechaCita >= $hoyIso && $fechaCita <= $finSemanaIso,
             'mes' => str_starts_with($fechaCita, $mesActual),
             default => true,
         };
-    }));
+
+        if ($coincide) {
+            $resultado[] = $cita;
+        }
+    }
+
+    return $resultado;
 }

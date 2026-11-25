@@ -20,13 +20,18 @@ function buscarPacienteMedico(array $pacientes, string $termino): array
         return array_values($pacientes);
     }
 
-    return array_values(array_filter($pacientes, static function (array $paciente) use ($consulta): bool {
+    $resultado = [];
+    foreach ($pacientes as $paciente) {
         $objetivo = normalizarTextoFiltro(
             ($paciente['nombre'] ?? '') . ' ' .
             ($paciente['correo'] ?? '') . ' ' .
             ($paciente['telefono'] ?? '') . ' ' .
             ($paciente['alergias'] ?? '')
         );
-        return str_contains($objetivo, $consulta);
-    }));
+        if (str_contains($objetivo, $consulta)) {
+            $resultado[] = $paciente;
+        }
+    }
+
+    return $resultado;
 }

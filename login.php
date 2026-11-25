@@ -79,6 +79,6 @@ require __DIR__ . '/includes/header.php';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="service/api_config.js"></script>
 <script src="service/auth_service.js"></script>
-<script src="js/login.js"></script>
+<script src="scripts/auth/login.js"></script>
 </body>
 </html>

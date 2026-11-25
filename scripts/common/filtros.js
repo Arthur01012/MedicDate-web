@@ -2,7 +2,7 @@
  * Funciones de búsqueda y filtrado del lado cliente para Asistente y Médico.
  * Complementan a los módulos PHP en utils/filtros/.
  */
-(function (global) {
+(function inicializarFiltros(global) {
   'use strict';
 
   function normalizarTexto(texto) {
@@ -26,55 +26,90 @@
   function buscarPaciente(pacientes, termino) {
     const q = normalizarTexto(termino);
     if (!q) return [...pacientes];
-    return pacientes.filter((p) => {
+
+    const resultado = [];
+    for (let i = 0; i < pacientes.length; i++) {
+      const p = pacientes[i];
       const texto = normalizarTexto(`${p.nombre || ''} ${p.correo || ''} ${p.telefono || ''}`);
-      return texto.includes(q);
-    });
+      if (texto.includes(q)) {
+        resultado.push(p);
+      }
+    }
+    return resultado;
   }
 
   function buscarPacienteMedico(pacientes, termino) {
     const q = normalizarTexto(termino);
     if (!q) return [...pacientes];
-    return pacientes.filter((p) => {
+
+    const resultado = [];
+    for (let i = 0; i < pacientes.length; i++) {
+      const p = pacientes[i];
       const texto = normalizarTexto(`${p.nombre || ''} ${p.correo || ''} ${p.telefono || ''} ${p.alergias || ''}`);
-      return texto.includes(q);
-    });
+      if (texto.includes(q)) {
+        resultado.push(p);
+      }
+    }
+    return resultado;
   }
 
   function filtrarCitasLapso(citas, lapso = 'hoy', fechaExacta = '') {
+    const resultado = [];
+
     if (fechaExacta) {
-      return citas.filter((c) => c.fecha === fechaExacta);
+      for (let i = 0; i < citas.length; i++) {
+        if (citas[i].fecha === fechaExacta) {
+          resultado.push(citas[i]);
+        }
+      }
+      return resultado;
     }
+
     const hoy = fechaHoyIso(0);
     const finSemana = fechaHoyIso(6);
     const mesActual = hoy.slice(0, 7);
+    const lapsoNormalizado = String(lapso || 'todas').toLowerCase();
 
-    switch (String(lapso || 'todas').toLowerCase()) {
-      case 'hoy':
-        return citas.filter((c) => c.fecha === hoy);
-      case 'semana':
-        return citas.filter((c) => c.fecha >= hoy && c.fecha <= finSemana);
-      case 'mes':
-        return citas.filter((c) => String(c.fecha || '').startsWith(mesActual));
-      default:
-        return [...citas];
+    if (lapsoNormalizado !== 'hoy' && lapsoNormalizado !== 'semana' && lapsoNormalizado !== 'mes') {
+      return [...citas];
     }
+
+    for (let i = 0; i < citas.length; i++) {
+      const c = citas[i];
+      if (lapsoNormalizado === 'hoy' && c.fecha === hoy) {
+        resultado.push(c);
+      } else if (lapsoNormalizado === 'semana' && c.fecha >= hoy && c.fecha <= finSemana) {
+        resultado.push(c);
+      } else if (lapsoNormalizado === 'mes' && String(c.fecha || '').startsWith(mesActual)) {
+        resultado.push(c);
+      }
+    }
+    return resultado;
   }
 
   function filtrarPorEstado(citas, estado = '') {
     const est = String(estado || '').toLowerCase().trim();
     if (!est || est === 'todos') return [...citas];
 
-    return citas.filter((c) => {
+    const resultado = [];
+    for (let i = 0; i < citas.length; i++) {
+      const c = citas[i];
       const actual = String(c.estado || '').toLowerCase();
+      let coincide = false;
+
       if (est === 'programada') {
-        return ['pendiente', 'confirmada', 'en_progreso'].includes(actual);
+        coincide = ['pendiente', 'confirmada', 'en_progreso'].includes(actual);
+      } else if (est === 'atendida') {
+        coincide = actual === 'completada';
+      } else {
+        coincide = actual === est;
       }
-      if (est === 'atendida') {
-        return actual === 'completada';
+
+      if (coincide) {
+        resultado.push(c);
       }
-      return actual === est;
-    });
+    }
+    return resultado;
   }
 
   function limpiarFiltros(contexto) {

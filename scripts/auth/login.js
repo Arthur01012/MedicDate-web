@@ -1,4 +1,3 @@
-
 const DESTINO_POR_ROL = {
     administrador: "pages/private/admin/panel.html",
     asistente: "pages/private/asistente/agenda_general.html",

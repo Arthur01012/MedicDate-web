@@ -2,7 +2,7 @@
  * Controlador de la vista: Resumen del médico
  * Archivo HTML: pages/private/doctor/resumen.html
  */
-(function () {
+(function inicializarDoctorResumen() {
   'use strict';
 
   const UI = window.MedicDateUI;
@@ -55,19 +55,28 @@
       cont.innerHTML = '';
       return;
     }
-    const mx = Math.max(1, ...dias.map((d) => d.total || 0));
-    cont.innerHTML = dias.map((d) => {
+
+    let mx = 1;
+    for (let i = 0; i < dias.length; i++) {
+      const total = dias[i].total || 0;
+      if (total > mx) mx = total;
+    }
+
+    let html = '';
+    for (let i = 0; i < dias.length; i++) {
+      const d = dias[i];
       const altura = Math.max(4, Math.round(((d.total || 0) / mx) * 80));
       const bg = d.es_hoy ? 'var(--azul)' : 'var(--azul-claro)';
       const diaTexto = UI.fechaCorta(d.fecha).split(' ')[0];
-      return `
+      html += `
         <div style="flex:1;text-align:center">
           <div style="font-size:13px;font-weight:700">${d.total || 0}</div>
           <div style="height:${altura}px;background:${bg};border-radius:6px 6px 0 0;margin-top:4px"></div>
           <div style="font-size:12px;color:var(--suave);margin-top:4px">${UI.esc(diaTexto)}</div>
         </div>
       `;
-    }).join('');
+    }
+    cont.innerHTML = html;
   }
 
   function renderAgendaHoy(citas) {
@@ -82,7 +91,10 @@
     }
 
     vacio.classList.add('oculto');
-    tbody.innerHTML = citas.map((c) => `
+    let html = '';
+    for (let i = 0; i < citas.length; i++) {
+      const c = citas[i];
+      html += `
       <tr>
         <td>${UI.fechaCorta(c.fecha)}</td>
         <td>${UI.esc(c.hora)}</td>
@@ -93,7 +105,9 @@
           <button type="button" class="btn btn-o btn-s" data-abrir-cita="${c.id_cita}">Abrir</button>
         </td>
       </tr>
-    `).join('');
+    `;
+    }
+    tbody.innerHTML = html;
   }
 
   async function cargarResumen() {
@@ -112,16 +126,20 @@
       if (!c) return;
       citaActivaId = c.id_cita;
 
-      document.getElementById('modalCitaTitulo').textContent = `Cita de ${c.paciente?.nombre || ''}`;
+      document.getElementById('modalCitaTitulo').textContent = `Cita de ${(c.paciente && c.paciente.nombre) || ''}`;
       document.getElementById('mcFechaHora').textContent = `${UI.fechaLarga(c.fecha)}, ${c.hora}`;
-      document.getElementById('mcPaciente').textContent = c.paciente?.edad != null
+      document.getElementById('mcPaciente').textContent = c.paciente && c.paciente.edad != null
         ? `${c.paciente.nombre} · ${c.paciente.edad} años`
-        : (c.paciente?.nombre || '—');
-      document.getElementById('mcTelefono').textContent = c.paciente?.telefono || '—';
+        : ((c.paciente && c.paciente.nombre) || '—');
+      document.getElementById('mcTelefono').textContent = (c.paciente && c.paciente.telefono) || '—';
       document.getElementById('mcMotivo').textContent = c.motivo || '—';
       document.getElementById('mcEstado').innerHTML = UI.badgeEstado(c.estado, c.estado_etiqueta);
 
-      document.querySelectorAll('#modalCita .solo-asistente').forEach((el) => el.classList.add('oculto'));
+      const camposAsistente = document.querySelectorAll('#modalCita .solo-asistente');
+      for (let i = 0; i < camposAsistente.length; i++) {
+        camposAsistente[i].classList.add('oculto');
+      }
+
       document.getElementById('mcSeccionDoctor').classList.remove('oculto');
       document.getElementById('btnCerrarModalCita').className = 'btn btn-o';
 
@@ -159,21 +177,32 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  function manejarGuardarNotas() {
+    guardarCita(false);
+  }
+
+  function manejarMarcarAtendida() {
+    guardarCita(true);
+  }
+
+  function manejarClickDocumento(e) {
+    const btn = e.target.closest('[data-abrir-cita]');
+    if (btn) {
+      abrirModalCitaMedico(Number(btn.dataset.abrirCita));
+    }
+  }
+
+  async function inicializarVista() {
     const sesion = await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'resumen' });
     if (!sesion) return;
     modalCitaCtrl = await UI.cargarModalCita();
 
-    document.getElementById('btnGuardarNotas').addEventListener('click', () => guardarCita(false));
-    document.getElementById('btnMarcarAtendida').addEventListener('click', () => guardarCita(true));
-
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-abrir-cita]');
-      if (btn) {
-        abrirModalCitaMedico(Number(btn.dataset.abrirCita));
-      }
-    });
+    document.getElementById('btnGuardarNotas').addEventListener('click', manejarGuardarNotas);
+    document.getElementById('btnMarcarAtendida').addEventListener('click', manejarMarcarAtendida);
+    document.addEventListener('click', manejarClickDocumento);
 
     await cargarResumen();
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', inicializarVista);
 })();

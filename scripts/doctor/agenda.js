@@ -2,7 +2,7 @@
  * Controlador de la vista: Mi agenda del médico
  * Archivo HTML: pages/private/doctor/mi_agenda.html
  */
-(function () {
+(function inicializarDoctorAgenda() {
   'use strict';
 
   const UI = window.MedicDateUI;
@@ -13,12 +13,14 @@
   let modalCitaCtrl = null;
   let citaActivaId = null;
   let esCargaInicial = true;
+  let selEstado = null;
 
   function actualizarBotonesLapso() {
-    document.querySelectorAll('[data-lapso]').forEach((btn) => {
-      const activo = btn.dataset.lapso === estadoFiltros.lapso;
-      btn.classList.toggle('on', activo);
-    });
+    const botones = document.querySelectorAll('[data-lapso]');
+    for (let i = 0; i < botones.length; i++) {
+      const activo = botones[i].dataset.lapso === estadoFiltros.lapso;
+      botones[i].classList.toggle('on', activo);
+    }
   }
 
   function renderTabla(citas) {
@@ -33,7 +35,10 @@
     }
 
     vacio.classList.add('oculto');
-    tbody.innerHTML = citas.map((c) => `
+    let html = '';
+    for (let i = 0; i < citas.length; i++) {
+      const c = citas[i];
+      html += `
       <tr>
         <td>${UI.fechaCorta(c.fecha)}</td>
         <td>${UI.esc(c.hora)}</td>
@@ -44,7 +49,9 @@
           <button type="button" class="btn btn-o btn-s" data-abrir-cita="${c.id_cita}">Abrir</button>
         </td>
       </tr>
-    `).join('');
+    `;
+    }
+    tbody.innerHTML = html;
   }
 
   async function cargarAgenda() {
@@ -75,16 +82,20 @@
       if (!c) return;
       citaActivaId = c.id_cita;
 
-      document.getElementById('modalCitaTitulo').textContent = `Cita de ${c.paciente?.nombre || ''}`;
+      document.getElementById('modalCitaTitulo').textContent = `Cita de ${(c.paciente && c.paciente.nombre) || ''}`;
       document.getElementById('mcFechaHora').textContent = `${UI.fechaLarga(c.fecha)}, ${c.hora}`;
-      document.getElementById('mcPaciente').textContent = c.paciente?.edad != null
+      document.getElementById('mcPaciente').textContent = c.paciente && c.paciente.edad != null
         ? `${c.paciente.nombre} · ${c.paciente.edad} años`
-        : (c.paciente?.nombre || '—');
-      document.getElementById('mcTelefono').textContent = c.paciente?.telefono || '—';
+        : ((c.paciente && c.paciente.nombre) || '—');
+      document.getElementById('mcTelefono').textContent = (c.paciente && c.paciente.telefono) || '—';
       document.getElementById('mcMotivo').textContent = c.motivo || '—';
       document.getElementById('mcEstado').innerHTML = UI.badgeEstado(c.estado, c.estado_etiqueta);
 
-      document.querySelectorAll('#modalCita .solo-asistente').forEach((el) => el.classList.add('oculto'));
+      const camposAsistente = document.querySelectorAll('#modalCita .solo-asistente');
+      for (let i = 0; i < camposAsistente.length; i++) {
+        camposAsistente[i].classList.add('oculto');
+      }
+
       document.getElementById('mcSeccionDoctor').classList.remove('oculto');
       document.getElementById('btnCerrarModalCita').className = 'btn btn-o';
 
@@ -123,35 +134,50 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  function manejarClickLapso() {
+    estadoFiltros.lapso = this.dataset.lapso;
+    cargarAgenda();
+  }
+
+  function manejarCambioEstado() {
+    estadoFiltros.estado = selEstado.value;
+    cargarAgenda();
+  }
+
+  function manejarClickTablaAgenda(e) {
+    const btn = e.target.closest('[data-abrir-cita]');
+    if (btn) {
+      abrirModalCita(Number(btn.dataset.abrirCita));
+    }
+  }
+
+  function manejarGuardarNotas() {
+    guardarCita(false);
+  }
+
+  function manejarMarcarAtendida() {
+    guardarCita(true);
+  }
+
+  async function inicializarVista() {
     const sesion = await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'agenda' });
     if (!sesion) return;
     modalCitaCtrl = await UI.cargarModalCita();
 
-    const selEstado = document.getElementById('filtroEstadoDoc');
+    selEstado = document.getElementById('filtroEstadoDoc');
 
-    document.querySelectorAll('[data-lapso]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        estadoFiltros.lapso = btn.dataset.lapso;
-        cargarAgenda();
-      });
-    });
+    const botonesLapso = document.querySelectorAll('[data-lapso]');
+    for (let i = 0; i < botonesLapso.length; i++) {
+      botonesLapso[i].addEventListener('click', manejarClickLapso);
+    }
 
-    selEstado.addEventListener('change', () => {
-      estadoFiltros.estado = selEstado.value;
-      cargarAgenda();
-    });
-
-    document.getElementById('tbodyMiAgenda').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-abrir-cita]');
-      if (btn) {
-        abrirModalCita(Number(btn.dataset.abrirCita));
-      }
-    });
-
-    document.getElementById('btnGuardarNotas').addEventListener('click', () => guardarCita(false));
-    document.getElementById('btnMarcarAtendida').addEventListener('click', () => guardarCita(true));
+    selEstado.addEventListener('change', manejarCambioEstado);
+    document.getElementById('tbodyMiAgenda').addEventListener('click', manejarClickTablaAgenda);
+    document.getElementById('btnGuardarNotas').addEventListener('click', manejarGuardarNotas);
+    document.getElementById('btnMarcarAtendida').addEventListener('click', manejarMarcarAtendida);
 
     await cargarAgenda();
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', inicializarVista);
 })();

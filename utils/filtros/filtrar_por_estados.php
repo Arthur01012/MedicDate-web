@@ -19,15 +19,22 @@ function filtrarCitasPorEstado(array $citas, string $estado = ''): array
         return array_values($citas);
     }
 
-    return array_values(array_filter($citas, static function (array $cita) use ($objetivo): bool {
+    $resultado = [];
+    foreach ($citas as $cita) {
         $estadoCita = strtolower((string) ($cita['estado'] ?? ''));
 
         if ($objetivo === 'programada') {
-            return in_array($estadoCita, ['pendiente', 'confirmada', 'en_progreso'], true);
+            $coincide = in_array($estadoCita, ['pendiente', 'confirmada', 'en_progreso'], true);
+        } elseif ($objetivo === 'atendida') {
+            $coincide = $estadoCita === 'completada';
+        } else {
+            $coincide = $estadoCita === $objetivo;
         }
-        if ($objetivo === 'atendida') {
-            return $estadoCita === 'completada';
+
+        if ($coincide) {
+            $resultado[] = $cita;
         }
-        return $estadoCita === $objetivo;
-    }));
+    }
+
+    return $resultado;
 }

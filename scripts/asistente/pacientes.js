@@ -2,7 +2,7 @@
  * Controlador de la vista: Pacientes del asistente (SOLO LECTURA)
  * Archivo HTML: pages/private/asistente/pacientes.html
  */
-(function () {
+(function inicializarAsistentePacientes() {
   'use strict';
 
   const UI = window.MedicDateUI;
@@ -11,6 +11,7 @@
 
   let todosLosPacientes = [];
   let modalPacienteCtrl = null;
+  let inpBuscar = null;
 
   function renderTabla(pacientes) {
     const tbody = document.getElementById('tbodyPacientes');
@@ -24,7 +25,10 @@
     }
 
     vacio.classList.add('oculto');
-    tbody.innerHTML = pacientes.map((p) => `
+    let html = '';
+    for (let i = 0; i < pacientes.length; i++) {
+      const p = pacientes[i];
+      html += `
       <tr>
         <td><b>${UI.esc(p.nombre)}</b></td>
         <td>${UI.esc(p.correo)}</td>
@@ -34,7 +38,9 @@
           <button type="button" class="btn btn-o btn-s" data-ver-ficha="${p.id_paciente}">Ver ficha</button>
         </td>
       </tr>
-    `).join('');
+    `;
+    }
+    tbody.innerHTML = html;
   }
 
   async function cargarPacientes() {
@@ -66,16 +72,21 @@
       if (citas.length === 0) {
         lista.innerHTML = '<p class="vacio" style="padding:8px 0">Sin citas.</p>';
       } else {
-        lista.innerHTML = `
-          <table>
-            <tbody>
-              ${citas.map((c) => `
+        let filasCitas = '';
+        for (let i = 0; i < citas.length; i++) {
+          const c = citas[i];
+          filasCitas += `
                 <tr>
                   <td>${UI.fechaCorta(c.fecha)} ${UI.esc(c.hora)}</td>
                   <td>${UI.esc(c.medico)}</td>
                   <td>${UI.badgeEstado(c.estado, c.estado_etiqueta)}</td>
                 </tr>
-              `).join('')}
+              `;
+        }
+        lista.innerHTML = `
+          <table>
+            <tbody>
+              ${filasCitas}
             </tbody>
           </table>
         `;
@@ -87,24 +98,29 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  function manejarBusquedaPaciente() {
+    const filtrados = Filtros.buscarPaciente(todosLosPacientes, inpBuscar.value);
+    renderTabla(filtrados);
+  }
+
+  function manejarClickTablaPacientes(e) {
+    const btn = e.target.closest('[data-ver-ficha]');
+    if (btn) {
+      abrirFichaPaciente(Number(btn.dataset.verFicha));
+    }
+  }
+
+  async function inicializarVista() {
     const sesion = await UI.inicializarLayoutPrivado({ rol: 'asistente', navActivo: 'pacientes' });
     if (!sesion) return;
     modalPacienteCtrl = await UI.cargarModalPaciente();
 
-    const inpBuscar = document.getElementById('inputBuscarPaciente');
-    inpBuscar.addEventListener('input', () => {
-      const filtrados = Filtros.buscarPaciente(todosLosPacientes, inpBuscar.value);
-      renderTabla(filtrados);
-    });
-
-    document.getElementById('tbodyPacientes').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-ver-ficha]');
-      if (btn) {
-        abrirFichaPaciente(Number(btn.dataset.verFicha));
-      }
-    });
+    inpBuscar = document.getElementById('inputBuscarPaciente');
+    inpBuscar.addEventListener('input', manejarBusquedaPaciente);
+    document.getElementById('tbodyPacientes').addEventListener('click', manejarClickTablaPacientes);
 
     await cargarPacientes();
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', inicializarVista);
 })();
