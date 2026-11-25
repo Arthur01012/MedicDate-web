@@ -613,6 +613,7 @@ tbody tr:hover {
 }
 
 .modal-backdrop.on,
+.modal-backdrop:target,
 #modal.on {
   display: flex;
 }
@@ -676,4 +677,12 @@ tbody tr:hover {
 
 .oculto {
   display: none !important;
+}
+
+/* miniatura de color en la tabla del hero */
+.miniatura {
+  display: inline-block;
+  width: 64px;
+  height: 40px;
+  border-radius: 8px;
 }

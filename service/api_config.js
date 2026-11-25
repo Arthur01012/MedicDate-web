@@ -86,7 +86,7 @@
     } catch (_) {
       // Ignorar
     }
-    global.location.href = '../../../login.html';
+    global.location.href = '../../../login.php';
   }
 
   function construirQuery(params) {

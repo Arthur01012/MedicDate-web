@@ -838,7 +838,7 @@ header {
   position: relative;
 }
 
-/* La imagen de cada diapositiva llega en la variable --imagen (la pone js/inicio.js) */
+/* La imagen de cada diapositiva llega en la variable --imagen (la pone index.php) */
 .hero-slide {
   min-height: 560px;
   padding: 80px 0 104px;

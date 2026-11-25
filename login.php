@@ -1,26 +1,17 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso del personal | MedicDate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="css/estilos.css" rel="stylesheet">
-</head>
-<body>
-    <div class="row g-0 min-vh-100">
+<?php
+$title  = 'Acceso del personal | MedicDate';
+$pagina = 'login';
+require __DIR__ . '/includes/head.php';
+require __DIR__ . '/includes/header.php';
+?>
+
+<main class="flex-grow-1 d-flex">
+    <div class="row g-0 flex-grow-1 w-100 m-0">
 
         <!-- Lado azul -->
         <div class="col-lg-6 d-none d-lg-flex login-lado">
             <span class="circulo" style="right: -120px; top: -120px; width: 360px; height: 360px"></span>
             <span class="circulo" style="left: -90px; bottom: 90px; width: 260px; height: 260px"></span>
-
-            <a class="position-relative d-flex align-items-center gap-2 text-decoration-none text-white align-self-start" href="index.html">
-                <img src="img/logo-blanco.svg" width="40" height="40" alt="MedicDate">
-                <span class="logo-texto text-white">MedicDate</span>
-            </a>
 
             <div class="position-relative d-flex flex-column gap-4" style="max-width: 460px">
                 <div class="d-flex flex-column gap-3">
@@ -77,15 +68,17 @@
                     </div>
                     <div class="d-flex flex-column gap-1">
                         <button class="btn btn-primary btn-grande" type="submit">Entrar</button>
-                        <a class="btn btn-link btn-grande" style="color: var(--texto-suave); height: 48px" href="index.html">&larr; Volver al portal</a>
+                        <a class="btn btn-link btn-grande" style="color: var(--texto-suave); height: 48px" href="index.php">&larr; Volver al portal</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+</main>
 
-    <script src="service/api_config.js"></script>
-    <script src="service/auth_service.js"></script>
-    <script src="js/login.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="service/api_config.js"></script>
+<script src="service/auth_service.js"></script>
+<script src="js/login.js"></script>
 </body>
 </html>
