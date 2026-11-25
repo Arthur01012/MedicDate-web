@@ -2,6 +2,8 @@
 $archivoConexion = __DIR__ . '/../web/apis/medicdate/config/conexion.php';
 
 $slides = [];
+// Las imágenes se piden desde la carpeta del sitio, sin importar dónde esté publicado
+$baseSitio = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/';
 if (file_exists($archivoConexion)) {
     require $archivoConexion;
     try {
@@ -30,8 +32,8 @@ require __DIR__ . '/includes/header.php';
 
         <section class="hero-full">
             <div id="carruselHero" class="carousel slide hero-carrusel<?= count($slides) <= 1 ? ' una-sola' : '' ?>"
-                 aria-label="Novedades del centro médico"
-                 <?= count($slides) > 1 ? 'data-bs-ride="carousel" data-bs-interval="6000" data-bs-pause="hover"' : '' ?>>
+                aria-label="Novedades del centro médico"
+                <?= count($slides) > 1 ? 'data-bs-ride="carousel" data-bs-interval="6000" data-bs-pause="hover"' : '' ?>>
 
                 <div class="carousel-indicators">
                     <?php foreach ($slides as $i => $slide): ?>
@@ -44,7 +46,7 @@ require __DIR__ . '/includes/header.php';
                 <div class="carousel-inner">
                     <?php foreach ($slides as $i => $slide): ?>
                         <div class="carousel-item hero-slide<?= $i === 0 ? ' active' : '' ?>"
-                             style="--imagen: url('<?= htmlspecialchars($slide['imagen_ruta']) ?>'); background-color: <?= htmlspecialchars($slide['color_fondo'] ?: '#0B4A82') ?>">
+                             style="--imagen: url('<?= htmlspecialchars($baseSitio . $slide['imagen_ruta']) ?>'); background-color: <?= htmlspecialchars($slide['color_fondo'] ?: '#0B4A82') ?>">
                             <div class="contenedor">
                                 <div class="hero-contenido d-flex flex-column gap-3">
                                     <?php if ($i === 0): ?>
