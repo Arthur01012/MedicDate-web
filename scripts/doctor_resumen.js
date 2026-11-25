@@ -160,7 +160,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'resumen' });
+    const sesion = await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'resumen' });
+    if (!sesion) return;
     modalCitaCtrl = await UI.cargarModalCita();
 
     document.getElementById('btnGuardarNotas').addEventListener('click', () => guardarCita(false));

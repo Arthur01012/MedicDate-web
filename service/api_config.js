@@ -8,13 +8,7 @@
   'use strict';
 
   const DEFAULT_API_BASE = 'https://medicdate.innego.net/web/apis/medicdate';
-
-  // IDs de rol por defecto en la BD cuando se accede sin sesión previa iniciada
-  const ID_USUARIO_POR_ROL = {
-    administrador: 1,
-    medico: 2,
-    asistente: 4
-  };
+  const CLAVE_SESION = 'usuario';
 
   let perfilActual = null;
 
@@ -33,40 +27,117 @@
     return DEFAULT_API_BASE;
   }
 
-  function obtenerSesion(rolEsperado) {
-    // Leer sesión activa de sessionStorage o localStorage si existe
-    let sesion = null;
-    try {
-      const raw = sessionStorage.getItem('usuario') || localStorage.getItem('usuario');
-      if (raw) {
-        sesion = JSON.parse(raw);
-      }
-    } catch (_) {
-      sesion = null;
+  function normalizarSesion(datos) {
+    if (!datos || typeof datos !== 'object') {
+      return null;
     }
 
-    const idPorDefecto = ID_USUARIO_POR_ROL[rolEsperado] || ID_USUARIO_POR_ROL.asistente;
+    const origenUsuario = (datos.usuario && typeof datos.usuario === 'object')
+      ? datos.usuario
+      : datos;
+    const origenSesion = (datos.sesion && typeof datos.sesion === 'object')
+      ? datos.sesion
+      : {};
 
-    if (sesion && typeof sesion === 'object') {
-      const rol = String(sesion.rol || '').toLowerCase();
-      if (!rolEsperado || rol === rolEsperado || (rolEsperado === 'asistente' && rol === 'administrador')) {
-        return {
-          id_usuario: Number(sesion.id_usuario) || idPorDefecto,
-          id_empleado: sesion.id_empleado ? Number(sesion.id_empleado) : null,
-          id_sesion: sesion.id_sesion || null,
-          token: sesion.token || null,
-          nombre: sesion.nombre || '',
-          correo: sesion.correo || '',
-          rol: rol || rolEsperado || ''
-        };
-      }
+    const idUsuario = Number(origenUsuario.id_usuario ?? datos.id_usuario);
+    const rol = String(origenUsuario.rol ?? datos.rol ?? '').trim().toLowerCase();
+
+    if (!Number.isInteger(idUsuario) || idUsuario <= 0 || !rol) {
+      return null;
     }
 
-    // Sin credenciales guardadas: enviar únicamente el id_usuario del rol para que la API cargue de la BD
+    const idEmpleadoRaw = origenUsuario.id_empleado ?? datos.id_empleado;
+    const idEmpleado = idEmpleadoRaw !== null && idEmpleadoRaw !== undefined && idEmpleadoRaw !== ''
+      ? Number(idEmpleadoRaw)
+      : null;
+
     return {
-      id_usuario: idPorDefecto,
-      rol: rolEsperado || ''
+      id_usuario: idUsuario,
+      id_empleado: Number.isInteger(idEmpleado) && idEmpleado > 0 ? idEmpleado : null,
+      id_sesion: origenUsuario.id_sesion || origenSesion.id_sesion || datos.id_sesion || null,
+      token: origenUsuario.token || origenSesion.token || datos.token || null,
+      nombre: String(origenUsuario.nombre ?? datos.nombre ?? '').trim(),
+      correo: String(origenUsuario.correo ?? datos.correo ?? '').trim().toLowerCase(),
+      rol
     };
+  }
+
+  function guardarSesion(datos) {
+    const sesionNormalizada = normalizarSesion(datos);
+    if (!sesionNormalizada) {
+      const err = new Error('Los datos de sesión recibidos no son válidos.');
+      err.codigo = 'SESION_INVALIDA';
+      throw err;
+    }
+
+    try {
+      sessionStorage.setItem(CLAVE_SESION, JSON.stringify(sesionNormalizada));
+    } catch (_) {
+      const err = new Error('No se pudo guardar la sesión en el navegador.');
+      err.codigo = 'ERROR_ALMACENAMIENTO';
+      throw err;
+    }
+
+    try {
+      localStorage.removeItem(CLAVE_SESION);
+    } catch (_) {
+      // Ignorar si localStorage no está disponible
+    }
+
+    const verificada = obtenerSesion();
+    if (!verificada || verificada.id_usuario !== sesionNormalizada.id_usuario || verificada.rol !== sesionNormalizada.rol) {
+      const err = new Error('No se pudo verificar la sesión guardada.');
+      err.codigo = 'ERROR_ALMACENAMIENTO';
+      throw err;
+    }
+
+    perfilActual = { ...verificada };
+    return verificada;
+  }
+
+  function obtenerSesion(rolEsperado) {
+    // Leer sesión activa desde sessionStorage o localStorage si existe
+    let raw = null;
+    try {
+      raw = sessionStorage.getItem(CLAVE_SESION);
+    } catch (_) {
+      raw = null;
+    }
+
+    if (!raw) {
+      try {
+        raw = localStorage.getItem(CLAVE_SESION);
+      } catch (_) {
+        raw = null;
+      }
+    }
+
+    if (!raw) {
+      return null;
+    }
+
+    let parsed = null;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (_) {
+      return null;
+    }
+
+    const sesion = normalizarSesion(parsed);
+    if (!sesion) {
+      return null;
+    }
+
+    if (rolEsperado) {
+      const rolRequerido = String(rolEsperado).trim().toLowerCase();
+      const rolValido = sesion.rol === rolRequerido ||
+        (rolRequerido === 'asistente' && sesion.rol === 'administrador');
+      if (!rolValido) {
+        return null;
+      }
+    }
+
+    return sesion;
   }
 
   function registrarPerfilCargado(datosPerfil) {
@@ -79,14 +150,23 @@
     return perfilActual;
   }
 
-  function cerrarSesion() {
+  function limpiarSesion() {
+    perfilActual = null;
     try {
-      sessionStorage.removeItem('usuario');
-      localStorage.removeItem('usuario');
+      sessionStorage.removeItem(CLAVE_SESION);
     } catch (_) {
       // Ignorar
     }
-    global.location.href = '../../../login.php';
+    try {
+      localStorage.removeItem(CLAVE_SESION);
+    } catch (_) {
+      // Ignorar
+    }
+  }
+
+  function cerrarSesion(rutaLogin = '../../../login.php') {
+    limpiarSesion();
+    global.location.href = rutaLogin;
   }
 
   function construirQuery(params) {
@@ -172,9 +252,11 @@
 
   global.MedicDateApi = {
     obtenerApiBase,
+    guardarSesion,
     obtenerSesion,
     registrarPerfilCargado,
     obtenerPerfilCargado,
+    limpiarSesion,
     cerrarSesion,
     peticionApi
   };

@@ -87,7 +87,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'pacientes' });
+    const sesion = await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'pacientes' });
+    if (!sesion) return;
     modalPacienteCtrl = await UI.cargarModalPaciente();
 
     const inpBuscar = document.getElementById('inputBuscarMisPacientes');

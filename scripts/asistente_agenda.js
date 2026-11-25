@@ -97,7 +97,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    await UI.inicializarLayoutPrivado({ rol: 'asistente', navActivo: 'agenda' });
+    const sesion = await UI.inicializarLayoutPrivado({ rol: 'asistente', navActivo: 'agenda' });
+    if (!sesion) return;
     modalCitaCtrl = await UI.cargarModalCita();
 
     const inpFecha = document.getElementById('filtroFecha');

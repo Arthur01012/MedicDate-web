@@ -10,7 +10,13 @@
   'use strict';
 
   function sesionMedico() {
-    return global.MedicDateApi.obtenerSesion('medico');
+    const sesion = global.MedicDateApi.obtenerSesion('medico');
+    if (!sesion) {
+      const err = new Error('No hay una sesión activa válida para el perfil de médico.');
+      err.codigo = 'SESION_REQUERIDA';
+      throw err;
+    }
+    return sesion;
   }
 
   async function obtenerResumenMedico() {

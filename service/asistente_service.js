@@ -8,7 +8,13 @@
   'use strict';
 
   function sesionAsistente() {
-    return global.MedicDateApi.obtenerSesion('asistente');
+    const sesion = global.MedicDateApi.obtenerSesion('asistente');
+    if (!sesion) {
+      const err = new Error('No hay una sesión activa válida para el perfil de asistente.');
+      err.codigo = 'SESION_REQUERIDA';
+      throw err;
+    }
+    return sesion;
   }
 
   async function obtenerAgendaGeneral(filtros = {}) {

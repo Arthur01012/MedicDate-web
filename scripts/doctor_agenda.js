@@ -124,7 +124,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'agenda' });
+    const sesion = await UI.inicializarLayoutPrivado({ rol: 'medico', navActivo: 'agenda' });
+    if (!sesion) return;
     modalCitaCtrl = await UI.cargarModalCita();
 
     const selEstado = document.getElementById('filtroEstadoDoc');

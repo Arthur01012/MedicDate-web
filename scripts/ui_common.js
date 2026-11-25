@@ -182,6 +182,10 @@
 
   async function inicializarLayoutPrivado({ rol, navActivo }) {
     const sesion = global.MedicDateApi.obtenerSesion(rol);
+    if (!sesion) {
+      global.location.replace('../../../login.php');
+      return null;
+    }
 
     const slotLateral = document.getElementById('slotLateral');
     const esDoctor = rol === 'medico';

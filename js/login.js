@@ -28,15 +28,21 @@ async function iniciarSesion(evento) {
     }
 
     try {
-        const respuesta = await AuthService.iniciarSesion(correo, clave);
-        const usuario = respuesta.usuario;
+        await AuthService.iniciarSesion(correo, clave);
+        const sesion = MedicDateApi.obtenerSesion();
 
-        // Guardamos lo que devuelve la API (id_usuario, id_empleado, nombre, correo, rol)
-        sessionStorage.setItem("usuario", JSON.stringify(usuario));
-        window.location.href = DESTINO_POR_ROL[usuario.rol];
+        if (!sesion || !DESTINO_POR_ROL[sesion.rol]) {
+            MedicDateApi.limpiarSesion();
+            mostrarError("No se pudo iniciar sesión.", "Tu cuenta no tiene un perfil válido asignado.");
+            return;
+        }
+
+        window.location.href = DESTINO_POR_ROL[sesion.rol];
     } catch (error) {
         if (error.datos) {
             mostrarError(error.datos.mensaje || "No se pudo iniciar sesión.", "");
+        } else if (error.codigo === "SESION_INVALIDA" || error.codigo === "ERROR_ALMACENAMIENTO") {
+            mostrarError("No se pudo iniciar sesión.", error.message);
         } else {
             mostrarError("No se pudo iniciar sesión.", "Revisa tu conexión e inténtalo de nuevo.");
         }
