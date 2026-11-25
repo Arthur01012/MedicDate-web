@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/../web/apis/medicdate/config/conexion.php';
 
+$baseSitio = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/';
 $conexion = conectarBD();
 $resultado = $conexion->query("SELECT titulo, texto, boton_texto, enlace, imagen_ruta, color_fondo FROM hero_slide WHERE activo = 1 ORDER BY orden ASC");
 $slides = $resultado->fetch_all(MYSQLI_ASSOC);
