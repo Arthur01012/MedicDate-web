@@ -34,21 +34,7 @@
   }
 
   function obtenerSesion(rolEsperado) {
-    // 1. Permitir indicar ?id_usuario=X por URL si se desea probar otro usuario de la BD
-    try {
-      const paramsUrl = new URLSearchParams(global.location.search);
-      const idUrl = Number(paramsUrl.get('id_usuario'));
-      if (idUrl > 0) {
-        return {
-          id_usuario: idUrl,
-          rol: rolEsperado || ''
-        };
-      }
-    } catch (_) {
-      // Ignorar
-    }
-
-    // 2. Leer sesión activa de sessionStorage o localStorage si existe
+    // Leer sesión activa de sessionStorage o localStorage si existe
     let sesion = null;
     try {
       const raw = sessionStorage.getItem('usuario') || localStorage.getItem('usuario');
@@ -76,7 +62,7 @@
       }
     }
 
-    // 3. Sin credenciales guardadas: enviar únicamente el id_usuario del rol para que la API cargue de la BD
+    // Sin credenciales guardadas: enviar únicamente el id_usuario del rol para que la API cargue de la BD
     return {
       id_usuario: idPorDefecto,
       rol: rolEsperado || ''
@@ -100,7 +86,7 @@
     } catch (_) {
       // Ignorar
     }
-    global.location.href = '../../../login.html';
+    global.location.href = '../../../login.php';
   }
 
   function construirQuery(params) {

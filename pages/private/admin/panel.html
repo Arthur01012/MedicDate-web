@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Panel general</title>
+  <link rel="stylesheet" href="../../../styles/panel_privado.css">
+</head>
+<body>
+  <div class="priv">
+    <aside class="lat">
+      <a class="marca" href="../../../index.php" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
+      <a data-nav="panel" class="on" href="./panel.html">Panel general</a>
+      <a data-nav="usuarios" href="./usuarios.html">Usuarios del personal</a>
+      <div class="tit">Contenido del portal</div>
+      <a data-nav="hero" href="./hero.php">Imágenes del hero</a>
+      <a data-nav="servicios" href="#servicios">Servicios</a>
+      <a data-nav="especialidades" href="#especialidades">Especialidades</a>
+      <a data-nav="medicos" href="#medicos">Médicos</a>
+      <a data-nav="resenas" href="#resenas">Reseñas</a>
+      <a data-nav="faq" href="#faq">Preguntas frecuentes</a>
+      <a data-nav="consejos" href="#consejos">Consejos y noticias</a>
+      <a data-nav="centro" href="#centro">Datos del centro</a>
+      <a data-nav="aviso" href="#aviso">Aviso de privacidad</a>
+    </aside>
+
+    <div class="pc">
+      <div class="bar">
+        <h1>Panel general</h1>
+        <div class="u">
+          <a style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit" href="./cuenta.html">
+            <span class="av" id="topbarAvatar">AD</span>
+            <span id="topbarUsuario">Administrador del sistema · Administrador</span>
+          </a>
+          <a class="btn btn-o btn-s" href="../../../index.php">Ver portal</a>
+          <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="resu">
+        <div class="card"><b id="kpiCitasHoy">5</b><span>Citas de hoy</span></div>
+        <div class="card"><b id="kpiProgramadas">11</b><span>Programadas</span></div>
+        <div class="card"><b id="kpiPacientes">8</b><span>Pacientes</span></div>
+        <div class="card"><b id="kpiMedicos">3</b><span>Médicos</span></div>
+        <div class="card"><b id="kpiUsuarios">4</b><span>Usuarios activos</span></div>
+      </div>
+
+      <div class="grid g2">
+        <div class="panel">
+          <h3 style="font-size:18px;margin-bottom:16px">Citas por estado</h3>
+          <div class="lista-barras">
+            <div class="fila">
+              <span>Programada</span>
+              <div class="pista"><div class="relleno" style="width:100%"></div></div>
+              <span class="valor">11</span>
+            </div>
+            <div class="fila">
+              <span>Atendida</span>
+              <div class="pista"><div class="relleno ok" style="width:36%"></div></div>
+              <span class="valor">4</span>
+            </div>
+            <div class="fila">
+              <span>Cancelada</span>
+              <div class="pista"><div class="relleno rojo" style="width:9%"></div></div>
+              <span class="valor">1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="font-size:18px;margin-bottom:16px">Citas por médico</h3>
+          <div class="lista-barras">
+            <div class="fila">
+              <span>Dra. Laura Méndez</span>
+              <div class="pista"><div class="relleno" style="width:40%"></div></div>
+              <span class="valor">4</span>
+            </div>
+            <div class="fila">
+              <span>Dr. José Rodríguez</span>
+              <div class="pista"><div class="relleno" style="width:100%"></div></div>
+              <span class="valor">10</span>
+            </div>
+            <div class="fila">
+              <span>Dra. Ana Torres</span>
+              <div class="pista"><div class="relleno" style="width:20%"></div></div>
+              <span class="valor">2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

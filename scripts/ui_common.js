@@ -85,7 +85,7 @@
 
   const FALLBACK_LATERAL_ASISTENTE = `
     <aside class="lat">
-      <a class="marca" href="../../../index.html" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
+      <a class="marca" href="../../../index.php" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
       <a data-nav="agenda" href="./agenda_general.html">Agenda general</a>
       <a data-nav="pacientes" href="./pacientes.html">Pacientes</a>
       <div class="tit">Cuenta</div>
@@ -94,7 +94,7 @@
 
   const FALLBACK_LATERAL_DOCTOR = `
     <aside class="lat">
-      <a class="marca" href="../../../index.html" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
+      <a class="marca" href="../../../index.php" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
       <a data-nav="resumen" href="./resumen.html">Resumen</a>
       <a data-nav="agenda" href="./mi_agenda.html">Mi agenda</a>
       <a data-nav="pacientes" href="./mis_pasientes.html">Mis pacientes</a>

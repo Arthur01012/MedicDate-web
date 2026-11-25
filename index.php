@@ -1,44 +1,59 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedicDate | Centro Médico Sagrado Corazón</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="css/estilos.css" rel="stylesheet">
-</head>
-<body class="d-flex flex-column min-vh-100">
+<?php
+require __DIR__ . '/../web/apis/medicdate/config/conexion.php';
 
-    <!-- Encabezado -->
-    <header>
-        <nav class="navbar navbar-expand-md contenedor py-3">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
-                <img src="img/logo.svg" width="40" height="40" alt="MedicDate">
-                <span class="logo-texto">MedicDate</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar menú">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="menuPrincipal">
-                <ul class="navbar-nav align-items-md-center gap-1">
-                    <li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="especialidades.html">Especialidades</a></li>
-                    <li class="nav-item"><a class="nav-link" href="medicos.html">Médicos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
-                    <li class="nav-item ms-md-2"><a class="btn btn-outline-primary d-flex align-items-center" style="height: 44px" href="login.html">Acceso del personal</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+$baseSitio = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/';
+$conexion = conectarBD();
+$resultado = $conexion->query("SELECT titulo, texto, boton_texto, enlace, imagen_ruta, color_fondo FROM hero_slide WHERE activo = 1 ORDER BY orden ASC");
+$slides = $resultado->fetch_all(MYSQLI_ASSOC);
+$conexion->close();
+
+$title  = 'MedicDate | Centro Médico Sagrado Corazón';
+$pagina = 'inicio';
+require __DIR__ . '/includes/head.php';
+require __DIR__ . '/includes/header.php';
+?>
 
     <main class="flex-grow-1">
-        <!-- Presentación (carrusel con las imágenes de "Imágenes del hero") -->
+
         <section class="hero-full">
-            <div id="carruselHero" class="carousel slide hero-carrusel" aria-label="Novedades del centro médico">
-                <div class="carousel-indicators" id="puntosHero"></div>
-                <div class="carousel-inner" id="slidesHero"></div>
+            <div id="carruselHero" class="carousel slide hero-carrusel<?= count($slides) <= 1 ? ' una-sola' : '' ?>"
+                aria-label="Novedades del centro médico"
+                <?= count($slides) > 1 ? 'data-bs-ride="carousel" data-bs-interval="6000" data-bs-pause="hover"' : '' ?>>
+
+                <div class="carousel-indicators">
+                    <?php foreach ($slides as $i => $slide): ?>
+                        <button type="button" data-bs-target="#carruselHero" data-bs-slide-to="<?= $i ?>"
+                                <?= $i === 0 ? 'class="active" aria-current="true"' : '' ?>
+                                aria-label="Diapositiva <?= $i + 1 ?>"></button>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="carousel-inner">
+                    <?php foreach ($slides as $i => $slide): ?>
+                        <div class="carousel-item hero-slide<?= $i === 0 ? ' active' : '' ?>"
+                            style="--imagen: url('<?= htmlspecialchars($baseSitio . $slide['imagen_ruta']) ?>'); background-color: <?= htmlspecialchars($slide['color_fondo'] ?: '#0B4A82') ?>">
+                            <div class="contenedor">
+                                <div class="hero-contenido d-flex flex-column gap-3">
+                                    <?php if ($i === 0): ?>
+                                        <h1 class="hero-titulo m-0"><?= htmlspecialchars($slide['titulo']) ?></h1>
+                                    <?php else: ?>
+                                        <h2 class="hero-titulo m-0"><?= htmlspecialchars($slide['titulo']) ?></h2>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($slide['texto'])): ?>
+                                        <p class="hero-texto m-0"><?= htmlspecialchars($slide['texto']) ?></p>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($slide['boton_texto']) && !empty($slide['enlace'])): ?>
+                                        <a class="btn btn-primary btn-grande px-4 align-self-start" href="<?= htmlspecialchars($slide['enlace']) ?>">
+                                            <?= htmlspecialchars($slide['boton_texto']) ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
 
                 <button class="carousel-control-prev" type="button" data-bs-target="#carruselHero" data-bs-slide="prev" aria-label="Anterior">
                     <span class="flecha"><i class="bi bi-chevron-left"></i></span>
@@ -49,7 +64,6 @@
             </div>
         </section>
 
-        <!-- Servicios -->
         <section class="contenedor py-5" id="servicios">
             <div class="mb-4">
                 <h2 class="seccion-titulo m-0">Nuestros servicios</h2>
@@ -101,7 +115,6 @@
             </div>
         </section>
 
-        <!-- Médicos -->
         <section class="seccion-tonal py-5" id="medicos">
             <div class="contenedor">
                 <div class="mb-4">
@@ -140,49 +153,6 @@
             </div>
         </section>
 
-        <!-- Horario -->
-        <section class="contenedor py-5" id="horario">
-            <h2 class="seccion-titulo mb-4">Días y horario de atención</h2>
-            <div class="horario-dias" id="diasSemana">
-                <div class="dia" data-dia="1">
-                    <span class="dia-nombre">Lunes</span>
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span class="dia-horas">24 horas</span>
-                </div>
-                <div class="dia" data-dia="2">
-                    <span class="dia-nombre">Martes</span>
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span class="dia-horas">24 horas</span>
-                </div>
-                <div class="dia" data-dia="3">
-                    <span class="dia-nombre">Miércoles</span>
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span class="dia-horas">24 horas</span>
-                </div>
-                <div class="dia" data-dia="4">
-                    <span class="dia-nombre">Jueves</span>
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span class="dia-horas">24 horas</span>
-                </div>
-                <div class="dia" data-dia="5">
-                    <span class="dia-nombre">Viernes</span>
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span class="dia-horas">24 horas</span>
-                </div>
-                <div class="dia" data-dia="6">
-                    <span class="dia-nombre">Sábado</span>
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span class="dia-horas">24 horas</span>
-                </div>
-                <div class="dia" data-dia="0">
-                    <span class="dia-nombre">Domingo</span>
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span class="dia-horas">24 horas</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Reseñas -->
         <section class="seccion-tonal py-5" id="resenas">
             <div class="contenedor">
                 <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
@@ -224,7 +194,6 @@
             </div>
         </section>
 
-        <!-- Contacto y ubicación -->
         <section class="contenedor py-5" id="ubicacion">
             <div class="mb-4">
                 <h2 class="seccion-titulo m-0">Contacto y ubicación</h2>
@@ -232,10 +201,10 @@
             </div>
             <div class="row g-3">
                 <div class="col-lg-5">
-                    <div class="tarjeta-contacto">
+                    <div class="tarjeta-contacto justify-content-center">
                         <div class="dato-contacto"><span class="servicio-icono"><i class="bi bi-geo-alt"></i></span><span><strong>Dirección</strong>A un lado de maderería "El Pino", Adolfo López Mateos S/N, Tepoxtequito, 43000 Huejutla de Reyes, Hgo.</span></div>
                         <div class="dato-contacto"><span class="servicio-icono"><i class="bi bi-telephone"></i></span><span><strong>Teléfono</strong><a href="tel:+527717293074">771 729 3074</a></span></div>
-                        <div class="dato-contacto"><span class="servicio-icono"><i class="bi bi-envelope"></i></span><span><strong>Correo</strong>[CORREO DEL CENTRO]</span></div>
+                        <div class="dato-contacto"><span class="servicio-icono"><i class="bi bi-clock"></i></span><span><strong>Horario</strong>Abierto las 24 horas, todos los días</span></div>
                     </div>
                 </div>
                 <div class="col-lg-7">
@@ -247,41 +216,44 @@
         </section>
     </main>
 
-    <!-- Pie de página -->
     <footer class="pie">
-        <div class="contenedor pt-4 pb-3">
-            <div class="row g-4 justify-content-between">
-                <div class="col-md-4">
-                    <a class="d-flex align-items-center gap-2 mb-2" href="index.html" style="min-height: 0">
-                        <img src="img/logo.svg" width="36" height="36" alt="MedicDate">
-                        <span class="logo-texto" style="font-size: 18px">MedicDate</span>
-                    </a>
-                    <p class="m-0" style="font-size: 14px; color: var(--texto-suave)">Centro Médico Sagrado Corazón. Gestión de citas médicas.</p>
-                </div>
-                <div class="col-6 col-md-auto">
-                    <h2>Explorar</h2>
-                    <a href="index.html">Inicio</a>
-                    <a href="especialidades.html">Especialidades</a>
-                    <a href="medicos.html">Médicos</a>
-                    <a href="contacto.html">Contacto</a>
-                </div>
-                <div class="col-12 col-md-4">
-                    <h2>Contacto</h2>
-                    <span class="dato">A un lado de maderería "El Pino", Adolfo López Mateos S/N, Tepoxtequito, 43000 Huejutla de Reyes, Hgo.</span>
-                    <span class="dato"><a href="tel:+527717293074">771 729 3074</a></span>
-                    <span class="dato">Abierto las 24 horas, todos los días</span>
-                </div>
-                <div class="col-6 col-md-auto">
-                    <h2>Personal</h2>
-                    <a class="destacado" href="login.html">Acceso del personal</a>
-                </div>
+    <div class="contenedor pt-4 pb-3">
+        <div class="row g-4 justify-content-between">
+            <div class="col-md-4">
+                <a class="d-flex align-items-center gap-2 mb-2" href="index.php" style="min-height: 0">
+                    <img src="img/logo.svg" width="36" height="36" alt="MedicDate">
+                    <span class="logo-texto" style="font-size: 18px">MedicDate</span>
+                </a>
+                <p class="m-0" style="font-size: 14px; color: var(--texto-suave)">Centro Médico Sagrado Corazón. Gestión de citas médicas.</p>
+            </div>
+            <div class="col-6 col-md-auto">
+                <h2>Explorar</h2>
+                <a href="index.php">Inicio</a>
+                <a href="especialidades.html">Especialidades</a>
+                <a href="medicos.html">Médicos</a>
+                <a href="servicios.html">Servicios</a>
+            </div>
+            <div class="col-6 col-md-auto">
+                <h2>Información</h2>
+                <a href="nosotros.html">Quiénes somos</a>
+                <a href="consejos.html">Consejos y noticias</a>
+                <a href="faq.html">Preguntas frecuentes</a>
+                <a href="aviso.html">Aviso de privacidad</a>
+            </div>
+            <div class="col-12 col-md-4">
+                <h2>Contacto</h2>
+                <span class="dato">A un lado de maderería "El Pino", Adolfo López Mateos S/N, Tepoxtequito, 43000 Huejutla de Reyes, Hgo.</span>
+                <span class="dato"><a href="tel:+527717293074">771 729 3074</a></span>
+                <span class="dato">Abierto las 24 horas, todos los días</span>
+            </div>
+            <div class="col-6 col-md-auto">
+                <h2>Personal</h2>
+                <a class="destacado" href="login.php">Acceso del personal</a>
             </div>
         </div>
-        <div class="contenedor pie-final">© 2026 Centro Médico Sagrado Corazón · MedicDate</div>
-    </footer>
-
+    </div>
+    <div class="contenedor pie-final">© 2026 Centro Médico Sagrado Corazón · MedicDate</div>
+</footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/hero-datos.js"></script>
-    <script src="js/inicio.js"></script>
 </body>
 </html>

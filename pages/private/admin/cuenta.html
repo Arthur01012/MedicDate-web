@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedicDate | Mi cuenta</title>
+  <link rel="stylesheet" href="../../../styles/panel_privado.css">
+</head>
+<body>
+  <div class="priv">
+    <aside class="lat">
+      <a class="marca" href="../../../index.php" style="padding:4px 12px 16px"><i>+</i>MedicDate</a>
+      <a data-nav="panel" href="./panel.html">Panel general</a>
+      <a data-nav="usuarios" href="./usuarios.html">Usuarios del personal</a>
+      <div class="tit">Contenido del portal</div>
+      <a data-nav="hero" href="./hero.php">Imágenes del hero</a>
+      <a data-nav="servicios" href="#servicios">Servicios</a>
+      <a data-nav="especialidades" href="#especialidades">Especialidades</a>
+      <a data-nav="medicos" href="#medicos">Médicos</a>
+      <a data-nav="resenas" href="#resenas">Reseñas</a>
+      <a data-nav="faq" href="#faq">Preguntas frecuentes</a>
+      <a data-nav="consejos" href="#consejos">Consejos y noticias</a>
+      <a data-nav="centro" href="#centro">Datos del centro</a>
+      <a data-nav="aviso" href="#aviso">Aviso de privacidad</a>
+    </aside>
+
+    <div class="pc">
+      <div class="bar">
+        <h1>Mi cuenta</h1>
+        <div class="u">
+          <span class="av" id="topbarAvatar">AD</span>
+          <span id="topbarUsuario">Administrador del sistema · Administrador</span>
+          <a class="btn btn-o btn-s" href="../../../index.php">Ver portal</a>
+          <button type="button" class="btn btn-o btn-s" id="btnCerrarSesion">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="kv">
+          <b>Nombre</b><span>Administrador del sistema</span>
+          <b>Correo</b><span>admin@centromedico.com</span>
+          <b>Perfil</b><span>Administrador</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 style="font-size:18px;margin-bottom:16px">Cambiar contraseña</h3>
+        <form id="formClave" novalidate>
+          <div class="campo">
+            <label for="claveActual">Contraseña actual</label>
+            <input id="claveActual" type="password" autocomplete="current-password">
+          </div>
+          <div class="campo">
+            <label for="claveNueva">Contraseña nueva (mínimo 8 caracteres)</label>
+            <input id="claveNueva" type="password" autocomplete="new-password">
+          </div>
+          <div class="campo">
+            <label for="claveRepetir">Repite la contraseña nueva</label>
+            <input id="claveRepetir" type="password" autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-p">Guardar contraseña</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h3 style="font-size:18px;margin-bottom:16px">Pregunta secreta</h3>
+        <p style="margin:0 0 16px;color:var(--suave)">Se usa para recuperar tu acceso si olvidas tu contraseña. Para cambiarla, confirma tu contraseña actual.</p>
+        <form id="formPregunta" novalidate>
+          <div class="campo">
+            <label for="claveActualPregunta">Contraseña actual</label>
+            <input id="claveActualPregunta" type="password" autocomplete="current-password">
+          </div>
+          <div class="campo">
+            <label for="preguntaSecreta">Pregunta secreta</label>
+            <select id="preguntaSecreta">
+              <option value="1">¿Cuál es el nombre de tu primera mascota?</option>
+              <option value="2">¿En qué ciudad nació tu madre?</option>
+              <option value="3">¿Cuál fue tu escuela primaria?</option>
+              <option value="4">¿Cuál es tu comida favorita?</option>
+              <option value="5">¿Cuál es el nombre de tu mejor amigo de la infancia?</option>
+              <option value="6">¿Cuál fue tu primer trabajo?</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="respuestaSecreta">Respuesta nueva</label>
+            <input id="respuestaSecreta" type="text" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-p">Guardar pregunta secreta</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
