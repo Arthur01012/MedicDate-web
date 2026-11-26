@@ -1,0 +1,121 @@
+/* Estilos del módulo Especialidades (parte pública).
+   Usa las mismas variables de color de styles/estilos.css */
+
+/* Franja superior con el título de la página */
+.esp-banda {
+  background: var(--superficie-alta);
+  border-bottom: 1px solid var(--linea);
+  padding: 48px 0;
+}
+
+.esp-banda h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.esp-banda p {
+  margin: 12px 0 0;
+  max-width: 60ch;
+  font-size: 18px;
+  color: var(--texto-suave);
+}
+
+/* Tarjeta de una especialidad (toda la tarjeta es un enlace) */
+.esp-tarjeta {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: var(--elev-1);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow .2s;
+}
+
+.esp-tarjeta:hover {
+  box-shadow: var(--elev-2);
+  color: inherit;
+}
+
+/* Círculo con la inicial de la especialidad */
+.esp-inicial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--azul-claro);
+  font-family: Montserrat, Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--azul);
+}
+
+.esp-tarjeta h2 {
+  margin: 16px 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.esp-tarjeta p {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.esp-ver {
+  margin-top: auto;
+  font-weight: 500;
+  color: var(--azul);
+}
+
+/* Detalle de una especialidad */
+.esp-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.esp-detalle {
+  max-width: 70ch;
+  font-size: 17px;
+  line-height: 1.6;
+  white-space: pre-line;   /* respeta los saltos de línea que escribe el administrador */
+}
+
+.esp-horarios {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.esp-horarios .dias-chip {
+  margin-top: 0;
+  height: auto;
+  min-height: 32px;
+  padding: 6px 12px;
+}
+
+.esp-aviso {
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: var(--elev-1);
+  color: var(--texto-suave);
+}
+
+@media (max-width: 575.98px) {
+  .esp-banda { padding: 32px 0; }
+  .esp-banda h1 { font-size: 32px; }
+}
