@@ -13,6 +13,7 @@
   let modalCitaCtrl = null;
   let citaActivaId = null;
   let esCargaInicial = true;
+  let solicitudAgendaId = 0;
   let selEstado = null;
 
   function actualizarBotonesLapso() {
@@ -55,24 +56,40 @@
   }
 
   async function cargarAgenda() {
+    const idActual = ++solicitudAgendaId;
     actualizarBotonesLapso();
-    let data = await Service.obtenerAgendaMedico(estadoFiltros);
+    try {
+      let data = await Service.obtenerAgendaMedico(estadoFiltros);
+      if (idActual !== solicitudAgendaId) return;
 
-    // Si en la primera carga el día de hoy no tiene citas en la BD, mostrar "Próximos 7 días"
-    if (esCargaInicial) {
+      // Si en la primera carga el día de hoy no tiene citas en la BD, mostrar "Próximos 7 días"
+      if (esCargaInicial) {
+        esCargaInicial = false;
+        if (estadoFiltros.lapso === 'hoy' && (!data.citas || data.citas.length === 0)) {
+          estadoFiltros.lapso = 'semana';
+          actualizarBotonesLapso();
+          data = await Service.obtenerAgendaMedico(estadoFiltros);
+          if (idActual !== solicitudAgendaId) return;
+        }
+      }
+
+      if (data.medico && data.medico.nombre) {
+        document.getElementById('topbarUsuario').textContent = `${data.medico.nombre} · Médico`;
+        document.getElementById('topbarAvatar').textContent = UI.iniciales(data.medico.nombre);
+      }
+      renderTabla(data.citas || []);
+    } catch (error) {
+      if (idActual !== solicitudAgendaId) return;
       esCargaInicial = false;
-      if (estadoFiltros.lapso === 'hoy' && (!data.citas || data.citas.length === 0)) {
-        estadoFiltros.lapso = 'semana';
-        actualizarBotonesLapso();
-        data = await Service.obtenerAgendaMedico(estadoFiltros);
+      if (UI.manejarErrorApi(error, 'No se pudo cargar tu agenda.')) return;
+      const tbody = document.getElementById('tbodyMiAgenda');
+      const vacio = document.getElementById('estadoVacio');
+      if (tbody) tbody.innerHTML = '';
+      if (vacio) {
+        vacio.textContent = error.message || 'No se pudo cargar tu agenda.';
+        vacio.classList.remove('oculto');
       }
     }
-
-    if (data.medico && data.medico.nombre) {
-      document.getElementById('topbarUsuario').textContent = `${data.medico.nombre} · Médico`;
-      document.getElementById('topbarAvatar').textContent = UI.iniciales(data.medico.nombre);
-    }
-    renderTabla(data.citas || []);
   }
 
   async function abrirModalCita(idCita) {
@@ -116,13 +133,18 @@
 
       modalCitaCtrl.backdrop.classList.add('on');
     } catch (error) {
-      UI.toast(error.message || 'No se pudo cargar el detalle de la cita.');
+      UI.manejarErrorApi(error, 'No se pudo cargar el detalle de la cita.');
     }
   }
 
   async function guardarCita(marcarAtendida) {
     if (!citaActivaId) return;
     const notas = document.getElementById('mcNotas').value.trim();
+    const btnGuardar = document.getElementById('btnGuardarNotas');
+    const btnAtender = document.getElementById('btnMarcarAtendida');
+
+    if (btnGuardar) btnGuardar.disabled = true;
+    if (btnAtender) btnAtender.disabled = true;
 
     try {
       const resp = await Service.guardarNotasCita(citaActivaId, notas, marcarAtendida);
@@ -130,7 +152,10 @@
       UI.toast(resp.mensaje || (marcarAtendida ? 'Cita marcada como atendida.' : 'Notas guardadas.'));
       await cargarAgenda();
     } catch (error) {
-      UI.toast(error.message || 'No se pudieron guardar los cambios.');
+      UI.manejarErrorApi(error, 'No se pudieron guardar los cambios.');
+    } finally {
+      if (btnGuardar) btnGuardar.disabled = false;
+      if (btnAtender) btnAtender.disabled = false;
     }
   }
 

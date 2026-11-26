@@ -40,7 +40,13 @@
       : {};
 
     const idUsuario = Number(origenUsuario.id_usuario ?? datos.id_usuario);
-    const rol = String(origenUsuario.rol ?? datos.rol ?? '').trim().toLowerCase();
+    const rolCrudo = origenUsuario.rol ?? datos.rol ??
+      (Array.isArray(origenUsuario.roles) ? origenUsuario.roles[0] : (Array.isArray(datos.roles) ? datos.roles[0] : ''));
+    const rol = String(rolCrudo || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
 
     if (!Number.isInteger(idUsuario) || idUsuario <= 0 || !rol) {
       return null;

@@ -111,12 +111,29 @@
   }
 
   async function cargarResumen() {
-    const data = await Service.obtenerResumenMedico();
-    renderSaludo(data.medico);
-    renderMetricas(data.resumen || {});
-    renderSiguienteCita(data.siguiente_cita);
-    renderGrafica(data.grafica_7_dias || []);
-    renderAgendaHoy(data.agenda_hoy || []);
+    try {
+      const data = await Service.obtenerResumenMedico();
+      renderSaludo(data.medico);
+      renderMetricas(data.resumen || {});
+      renderSiguienteCita(data.siguiente_cita);
+      renderGrafica(data.grafica_7_dias || []);
+      renderAgendaHoy(data.agenda_hoy || []);
+    } catch (error) {
+      if (UI.manejarErrorApi(error, 'No se pudo cargar el resumen del médico.')) return;
+      const subtitulo = document.getElementById('subtituloDoctor');
+      if (subtitulo && subtitulo.textContent === 'Cargando perfil...') {
+        subtitulo.textContent = 'No se pudo cargar la información del perfil.';
+      }
+      const box = document.getElementById('boxSiguienteCita');
+      if (box && !box.innerHTML.trim()) {
+        box.innerHTML = '<p class="vacio">No se pudo cargar la siguiente cita.</p>';
+      }
+      const vacio = document.getElementById('estadoVacioHoy');
+      if (vacio) {
+        vacio.textContent = error.message || 'No se pudo cargar la agenda de hoy.';
+        vacio.classList.remove('oculto');
+      }
+    }
   }
 
   async function abrirModalCitaMedico(idCita) {
@@ -154,18 +171,24 @@
       btnGuardar.classList.toggle('oculto', !c.puede_editar_notas);
       btnAtender.classList.toggle('oculto', !c.puede_marcar_atendida);
 
-      const estEtiqueta = String(c.estado_etiqueta || c.estado || '');
-      avisoFecha.classList.toggle('oculto', !(estEtiqueta === 'Programada' && !c.puede_marcar_atendida));
+      const estClave = String(c.estado || c.estado_etiqueta || '').toLowerCase();
+      const esProgramada = ['pendiente', 'confirmada', 'en_progreso', 'programada'].includes(estClave);
+      avisoFecha.classList.toggle('oculto', !(esProgramada && !c.puede_marcar_atendida));
 
       modalCitaCtrl.backdrop.classList.add('on');
     } catch (error) {
-      UI.toast(error.message || 'No se pudo cargar el detalle de la cita.');
+      UI.manejarErrorApi(error, 'No se pudo cargar el detalle de la cita.');
     }
   }
 
   async function guardarCita(marcarAtendida) {
     if (!citaActivaId) return;
     const notas = document.getElementById('mcNotas').value.trim();
+    const btnGuardar = document.getElementById('btnGuardarNotas');
+    const btnAtender = document.getElementById('btnMarcarAtendida');
+
+    if (btnGuardar) btnGuardar.disabled = true;
+    if (btnAtender) btnAtender.disabled = true;
 
     try {
       const resp = await Service.guardarNotasCita(citaActivaId, notas, marcarAtendida);
@@ -173,7 +196,10 @@
       UI.toast(resp.mensaje || (marcarAtendida ? 'Cita marcada como atendida.' : 'Notas guardadas.'));
       await cargarResumen();
     } catch (error) {
-      UI.toast(error.message || 'No se pudieron guardar los cambios.');
+      UI.manejarErrorApi(error, 'No se pudieron guardar los cambios.');
+    } finally {
+      if (btnGuardar) btnGuardar.disabled = false;
+      if (btnAtender) btnAtender.disabled = false;
     }
   }
 

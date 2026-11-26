@@ -12,6 +12,7 @@
   let estadoFiltros = Filtros.limpiarFiltros('asistente_agenda');
   let modalCitaCtrl = null;
   let medicosCargados = false;
+  let solicitudAgendaId = 0;
   let inpFecha = null;
   let selMedico = null;
   let selEstado = null;
@@ -74,14 +75,29 @@
   }
 
   async function cargarAgenda() {
-    const data = await Service.obtenerAgendaGeneral(estadoFiltros);
-    if (data.usuario && data.usuario.nombre) {
-      document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
-      document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
+    const idActual = ++solicitudAgendaId;
+    try {
+      const data = await Service.obtenerAgendaGeneral(estadoFiltros);
+      if (idActual !== solicitudAgendaId) return;
+
+      if (data.usuario && data.usuario.nombre) {
+        document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
+        document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
+      }
+      renderResumen(data.resumen || {});
+      poblarSelectMedicos(data.medicos || []);
+      renderTablaCitas(data.citas || []);
+    } catch (error) {
+      if (idActual !== solicitudAgendaId) return;
+      if (UI.manejarErrorApi(error, 'No se pudo cargar la agenda general.')) return;
+      const tbody = document.getElementById('tbodyCitas');
+      const vacio = document.getElementById('estadoVacio');
+      if (tbody) tbody.innerHTML = '';
+      if (vacio) {
+        vacio.textContent = error.message || 'No se pudo cargar la agenda general.';
+        vacio.classList.remove('oculto');
+      }
     }
-    renderResumen(data.resumen || {});
-    poblarSelectMedicos(data.medicos || []);
-    renderTablaCitas(data.citas || []);
   }
 
   async function abrirDetalleCita(idCita) {
@@ -111,7 +127,7 @@
 
       modalCitaCtrl.backdrop.classList.add('on');
     } catch (error) {
-      UI.toast(error.message || 'No se pudo cargar el detalle de la cita.');
+      UI.manejarErrorApi(error, 'No se pudo cargar el detalle de la cita.');
     }
   }
 

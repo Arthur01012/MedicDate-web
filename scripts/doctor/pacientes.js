@@ -45,13 +45,24 @@
   }
 
   async function cargarPacientes() {
-    const data = await Service.obtenerMisPacientes('');
-    if (data.medico && data.medico.nombre) {
-      document.getElementById('topbarUsuario').textContent = `${data.medico.nombre} · Médico`;
-      document.getElementById('topbarAvatar').textContent = UI.iniciales(data.medico.nombre);
+    try {
+      const data = await Service.obtenerMisPacientes('');
+      if (data.medico && data.medico.nombre) {
+        document.getElementById('topbarUsuario').textContent = `${data.medico.nombre} · Médico`;
+        document.getElementById('topbarAvatar').textContent = UI.iniciales(data.medico.nombre);
+      }
+      listaPacientes = data.pacientes || [];
+      renderTabla(listaPacientes);
+    } catch (error) {
+      if (UI.manejarErrorApi(error, 'No se pudieron cargar tus pacientes.')) return;
+      const tbody = document.getElementById('tbodyMisPacientes');
+      const vacio = document.getElementById('estadoVacio');
+      if (tbody) tbody.innerHTML = '';
+      if (vacio) {
+        vacio.textContent = error.message || 'No se pudieron cargar tus pacientes.';
+        vacio.classList.remove('oculto');
+      }
     }
-    listaPacientes = data.pacientes || [];
-    renderTabla(listaPacientes);
   }
 
   async function abrirHistorialPaciente(idPaciente) {
@@ -93,7 +104,7 @@
 
       modalPacienteCtrl.backdrop.classList.add('on');
     } catch (error) {
-      UI.toast(error.message || 'No se pudo cargar el historial del paciente.');
+      UI.manejarErrorApi(error, 'No se pudo cargar el historial del paciente.');
     }
   }
 

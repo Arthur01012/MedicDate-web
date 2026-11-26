@@ -44,13 +44,24 @@
   }
 
   async function cargarPacientes() {
-    const data = await Service.obtenerPacientesAsistente('');
-    if (data.usuario && data.usuario.nombre) {
-      document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
-      document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
+    try {
+      const data = await Service.obtenerPacientesAsistente('');
+      if (data.usuario && data.usuario.nombre) {
+        document.getElementById('topbarUsuario').textContent = `${data.usuario.nombre} · Asistente`;
+        document.getElementById('topbarAvatar').textContent = UI.iniciales(data.usuario.nombre);
+      }
+      todosLosPacientes = data.pacientes || [];
+      renderTabla(todosLosPacientes);
+    } catch (error) {
+      if (UI.manejarErrorApi(error, 'No se pudieron cargar los pacientes.')) return;
+      const tbody = document.getElementById('tbodyPacientes');
+      const vacio = document.getElementById('estadoVacio');
+      if (tbody) tbody.innerHTML = '';
+      if (vacio) {
+        vacio.textContent = error.message || 'No se pudieron cargar los pacientes.';
+        vacio.classList.remove('oculto');
+      }
     }
-    todosLosPacientes = data.pacientes || [];
-    renderTabla(todosLosPacientes);
   }
 
   async function abrirFichaPaciente(idPaciente) {
@@ -94,7 +105,7 @@
 
       modalPacienteCtrl.backdrop.classList.add('on');
     } catch (error) {
-      UI.toast(error.message || 'No se pudo cargar la ficha del paciente.');
+      UI.manejarErrorApi(error, 'No se pudo cargar la ficha del paciente.');
     }
   }
 

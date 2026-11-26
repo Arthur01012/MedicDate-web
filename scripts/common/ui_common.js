@@ -289,6 +289,25 @@
     return { backdrop, cerrar };
   }
 
+  function manejarErrorApi(error, mensajePorDefecto) {
+    const codigo = error && error.codigo ? String(error.codigo) : '';
+    const status = error && error.status ? Number(error.status) : 0;
+    const esErrorSesion = status === 401 ||
+      codigo === 'SESION_INVALIDA' ||
+      codigo === 'SESION_REQUERIDA' ||
+      codigo === 'AUTENTICACION_REQUERIDA' ||
+      codigo === 'USUARIO_NO_ENCONTRADO';
+
+    if (esErrorSesion) {
+      toast((error && error.message) || 'Tu sesión expiró. Inicia sesión nuevamente.');
+      global.MedicDateApi.cerrarSesion();
+      return true;
+    }
+
+    toast((error && error.message) || mensajePorDefecto || 'No se pudo completar la operación.');
+    return false;
+  }
+
   global.MedicDateUI = {
     esc,
     iniciales,
@@ -296,6 +315,7 @@
     fechaLarga,
     badgeEstado,
     toast,
+    manejarErrorApi,
     inicializarLayoutPrivado,
     cargarModalCita,
     cargarModalPaciente
