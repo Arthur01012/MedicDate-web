@@ -10,7 +10,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="menuPrincipal">
             <ul class="navbar-nav align-items-md-center gap-1">
                 <li class="nav-item"><a class="nav-link<?= $pagina === 'inicio' ? ' active' : '' ?>" href="index.php"<?= $pagina === 'inicio' ? ' aria-current="page"' : '' ?>>Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="especialidades.html">Especialidades</a></li>
+                <li class="nav-item"><a class="nav-link" href="especialidades.php">Especialidades</a></li>
                 <li class="nav-item"><a class="nav-link" href="servicios.html">Servicios</a></li>
                 <li class="nav-item"><a class="nav-link" href="nosotros.html">Quiénes somos</a></li>
                 <li class="nav-item"><a class="nav-link" href="consejos.html">Consejos y noticias</a></li>

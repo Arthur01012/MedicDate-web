@@ -14,6 +14,13 @@
                 <a href="especialidades.php">Especialidades</a>
                 <a href="servicios.html">Servicios</a>
             </div>
+             <div class="col-6 col-md-auto">
+                <h2>Información</h2>
+                <a href="nosotros.html">Quiénes somos</a>
+                <a href="consejos.html">Consejos y noticias</a>
+                <a href="faq.php">Preguntas frecuentes</a>
+                <a href="aviso.php">Aviso de privacidad</a>
+            </div>
             <div class="col-12 col-md-4">
                 <h2>Contacto</h2>
                 <span class="dato">A un lado de maderería "El Pino", Adolfo López Mateos S/N, Tepoxtequito, 43000 Huejutla de Reyes, Hgo.</span>

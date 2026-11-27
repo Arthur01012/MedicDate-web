@@ -1,0 +1,118 @@
+/* Estilos de las páginas públicas Preguntas frecuentes y Aviso de privacidad.
+   Usa las variables de color de styles/estilos.css */
+
+.info-banda {
+  background: var(--superficie-alta);
+  border-bottom: 1px solid var(--linea);
+  padding: 48px 0;
+}
+
+.info-banda h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.info-banda p {
+  margin: 12px 0 0;
+  max-width: 60ch;
+  font-size: 18px;
+  color: var(--texto-suave);
+}
+
+/* Preguntas frecuentes: cada pregunta es un <details> que se abre y cierra */
+.faq-lista {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: var(--elev-1);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 12px 20px;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary:focus-visible {
+  outline: 2px solid var(--azul);
+  outline-offset: 2px;
+  border-radius: 16px;
+}
+
+.faq-mas {
+  flex: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--azul);
+}
+
+.faq-mas::before {
+  content: "+";
+}
+
+.faq-item[open] .faq-mas::before {
+  content: "−";
+}
+
+.faq-respuesta {
+  margin: 0;
+  padding: 0 20px 20px;
+  line-height: 1.6;
+  color: var(--texto-suave);
+}
+
+/* Aviso de privacidad */
+.aviso-tarjeta {
+  max-width: 760px;
+  padding: 28px;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: var(--elev-1);
+}
+
+.aviso-tarjeta p {
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+
+.aviso-tarjeta p:last-child {
+  margin-bottom: 0;
+}
+
+.aviso-fecha {
+  max-width: 760px;
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.info-aviso {
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: var(--superficie);
+  box-shadow: var(--elev-1);
+  color: var(--texto-suave);
+}
+
+@media (max-width: 575.98px) {
+  .info-banda { padding: 32px 0; }
+  .info-banda h1 { font-size: 32px; }
+}
