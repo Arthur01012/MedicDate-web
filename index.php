@@ -5,6 +5,7 @@ $baseSitio = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/';
 $conexion = conectarBD();
 $resultado = $conexion->query("SELECT titulo, texto, boton_texto, enlace, imagen_ruta, color_fondo FROM hero_slide WHERE activo = 1 ORDER BY orden ASC");
 $slides = $resultado->fetch_all(MYSQLI_ASSOC);
+$resenas = $conexion->query("SELECT nombre_autor, estrellas, texto FROM resena WHERE publicada = 1 ORDER BY fecha_registro DESC LIMIT 3")->fetch_all(MYSQLI_ASSOC);
 $conexion->close();
 
 $title  = 'MedicDate | Centro Médico Sagrado Corazón';
@@ -169,27 +170,15 @@ require __DIR__ . '/includes/header.php';
                     </div>
                 </div>
                 <div class="row g-3">
+                    <?php foreach ($resenas as $resena): ?>
                     <div class="col-md-4">
                         <figure class="resena">
-                            <span class="estrellas" aria-label="5 de 5 estrellas">★★★★★</span>
-                            <blockquote>Reservé mi cita desde el celular en un minuto y me atendieron a la hora. Muy buen trato.</blockquote>
-                            <figcaption><span class="avatar">MG</span><span><strong>María G.</strong><small>Medicina general</small></span></figcaption>
+                            <span class="estrellas" aria-label="<?= $resena['estrellas'] ?> de 5 estrellas"><?= str_repeat('★', $resena['estrellas']) . str_repeat('☆', 5 - $resena['estrellas']) ?></span>
+                            <blockquote><?= htmlspecialchars($resena['texto']) ?></blockquote>
+                            <figcaption><span class="avatar"><?= htmlspecialchars(mb_substr($resena['nombre_autor'], 0, 1)) ?></span><span><strong><?= htmlspecialchars($resena['nombre_autor']) ?></strong></span></figcaption>
                         </figure>
                     </div>
-                    <div class="col-md-4">
-                        <figure class="resena">
-                            <span class="estrellas" aria-label="5 de 5 estrellas">★★★★★</span>
-                            <blockquote>La doctora fue muy paciente con mi hijo y nos explicó todo con claridad. Lo recomiendo.</blockquote>
-                            <figcaption><span class="avatar">CR</span><span><strong>Carlos R.</strong><small>Pediatría</small></span></figcaption>
-                        </figure>
-                    </div>
-                    <div class="col-md-4">
-                        <figure class="resena">
-                            <span class="estrellas" aria-label="4 de 5 estrellas">★★★★☆</span>
-                            <blockquote>Instalaciones limpias y personal amable. Ya no tengo que llamar para saber si hay lugar.</blockquote>
-                            <figcaption><span class="avatar">SH</span><span><strong>Sofía H.</strong><small>Cardiología</small></span></figcaption>
-                        </figure>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </section>
@@ -229,7 +218,7 @@ require __DIR__ . '/includes/header.php';
             <div class="col-6 col-md-auto">
                 <h2>Explorar</h2>
                 <a href="index.php">Inicio</a>
-                <a href="especialidades.html">Especialidades</a>
+                <a href="especialidades.php">Especialidades</a>
                 <a href="medicos.html">Médicos</a>
                 <a href="servicios.html">Servicios</a>
             </div>
@@ -237,8 +226,8 @@ require __DIR__ . '/includes/header.php';
                 <h2>Información</h2>
                 <a href="nosotros.html">Quiénes somos</a>
                 <a href="consejos.html">Consejos y noticias</a>
-                <a href="faq.html">Preguntas frecuentes</a>
-                <a href="aviso.html">Aviso de privacidad</a>
+                <a href="faq.php">Preguntas frecuentes</a>
+                <a href="aviso.php">Aviso de privacidad</a>
             </div>
             <div class="col-12 col-md-4">
                 <h2>Contacto</h2>
